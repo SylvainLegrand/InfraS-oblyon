@@ -19,7 +19,9 @@ if (! defined('ISLOADEDBYSTEELSHEET')) die('Must be call by steelsheet'); ?>
 		display: table-cell;
 		vertical-align: middle;
 <?php } else { ?>
-		padding-top: 12vh;	/* InfraS change */
+		/* InfraS change : meme position que l'ancien margin-top 30vw (carte sous le milieu) mais calculee sur la hauteur de l'ecran (30vw = 55vh en 16:9),
+		   plafonnee pour laisser 420px a la carte : plus jamais hors ecran sur une fenetre basse */
+		padding-top: min(55vh, calc(100vh - 420px));
 <?php } ?>
     }
     .login_vertical_align {

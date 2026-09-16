@@ -360,3 +360,18 @@
 	width: 100%;
 	box-sizing: border-box;
 }
+/* User tab "Colors" (3.6.0) */
+.oblyon-color-swatch {
+	display: inline-block;
+	width: 1.2em;
+	height: 1.2em;
+	border: 1px solid var(--oblyon-border-strong);
+	border-radius: var(--oblyon-radius-sm);
+	vertical-align: middle;
+}
+table.oblyon-user-colors input.oblyon-user-color {
+	width: 7em;
+}
+table.oblyon-user-colors input.oblyon-user-color:disabled {
+	cursor: not-allowed;
+}

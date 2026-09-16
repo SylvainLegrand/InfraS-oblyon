@@ -115,7 +115,7 @@ div.login_block .infrassearchdropdown-breadcrumb-item {
 	transition: background-color var(--oblyon-transition);
 }
 div.login_block .infrassearchdropdown-breadcrumb-item:hover {
-	background-color: var(--oblyon-neutral-bg);
+	background-color: var(--colorbline_hover);	/* survol des lignes du preset : le fond signale le survol, le texte reste celui des lignes */
 }
 div.login_block .infrassearchdropdown-breadcrumb-item a {
 	display: flex;
@@ -131,7 +131,7 @@ div.login_block .infrassearchdropdown-breadcrumb-item a {
 	overflow: hidden;
 }
 div.login_block .infrassearchdropdown-breadcrumb-item:hover a {
-	color: var(--maincolor) !important;
+	color: var(--colorfline) !important;	/* pas la couleur principale : sombre dans certains presets (infras-dark), le texte disparaissait */
 }
 div.login_block .infrassearchdropdown-breadcrumb-item a > span[class*="fa-"],
 div.login_block .infrassearchdropdown-breadcrumb-item a > img {

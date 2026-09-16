@@ -133,7 +133,7 @@
 	**/
 	function oblyon_preset_key_is_valid($key)
 	{
-		return (bool) preg_match('/^[a-z0-9][a-z0-9_-]{1,39}$/', $key);
+		return (bool) preg_match('/^[a-z0-9][a-z0-9_-]{1,39}\z/', $key);	// \z : no trailing newline accepted
 	}
 
 	/**
@@ -147,6 +147,26 @@
 	{
 		$dirs	= oblyon_presets_dirs();
 		return $dirs[$source == 'module' ? 'module' : 'instance'].'/'.$key.'.json';
+	}
+	/**
+	*	Typed validation of a preset value (import / normalization) : a value ends up in the generated CSS and in the admin forms,
+	*	so only the shapes the theme understands are accepted. Colours : '#RRGGBB', '#RGB', '#' (inherit), 'r,g,b' ; numbers ; on/off ;
+	*	free text (font family, effects...) without HTML markup, quotes, backslash or control characters. custom_css : no '<'.
+	*
+	*	@param		string	$section	Section key
+	*	@param		string	$name		Constant name
+	*	@param		string	$value		Value (trimmed)
+	*	@return		bool
+	**/
+	function oblyon_preset_value_is_valid($section, $name, $value)
+	{
+		if ($value === '')	return true;	// '' = remove the constant
+		if ($section == 'custom_css')	return (strpos($value, '<') === false && ! preg_match('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', $value));
+		if (preg_match('/^-?\d+(\.\d+)?$/', $value))	return true;	// ratios, sizes, on / off
+		if (preg_match('/(RATIO|_SIZE|HEIGHT|WIDTH|MAXTABS|RADIUS|PADDING|LIMIT)/', $name))	return false;	// numeric settings : nothing else
+		$iscolor	= (preg_match('/^(OBLYON_COLOR_|OBLYON_INFOXBOX_)/', $name) || preg_match('/^THEME_ELDY_(.*BACK|.*TEXT|BTNACTION|TEXTBTNACTION|USE_HOVER|USE_CHECKED|LINE|COLOR|MEMBER|TOPBORDER)/', $name));
+		if ($iscolor)	return (bool) (preg_match('/^#([0-9A-F]{3}|[0-9A-F]{6})?$/i', $value) || preg_match('/^\d{1,3},\d{1,3},\d{1,3}$/', $value));
+		return ! (preg_match('/[<>"\'\\\\]/', $value) || preg_match('/[[:cntrl:]]/', $value));	// free text : no markup, quote, backslash or control character
 	}
 
 	/**
@@ -201,7 +221,9 @@
 		foreach (oblyon_presets_sections() as $section => $def) {
 			if (! isset($data[$section]))	continue;
 			if ($def['scalar']) {
-				if (is_scalar($data[$section]) && (string) $data[$section] !== '')	$out['sections'][$section]	= array($def['names'][0] => (string) $data[$section]);
+				if (is_scalar($data[$section]) && (string) $data[$section] !== '' && oblyon_preset_value_is_valid($section, $def['names'][0], (string) $data[$section])) {
+					$out['sections'][$section]	= array($def['names'][0] => (string) $data[$section]);
+				}
 				continue;
 			}
 			if (! is_array($data[$section]))	continue;
@@ -211,7 +233,7 @@
 				if (! preg_match('/^[A-Z0-9_]{3,80}$/', $name) || oblyon_presets_section_of($name) != $section || ! is_scalar($value))	continue;
 				$value	= trim((string) $value);
 				if (preg_match('/^#[0-9a-f]{3,8}$/i', $value))	$value	= strtoupper($value);	// hex colors in a single case
-				if (strlen($value) > 255)	continue;
+				if (strlen($value) > 255 || ! oblyon_preset_value_is_valid($section, $name, $value))	continue;	// values are printed in the CSS and in the admin forms : typed validation
 				$values[$name]	= $value;
 			}
 			if (count($values))	$out['sections'][$section]	= $values;
@@ -340,6 +362,8 @@
 		global $conf, $db;
 
 		if (getDolGlobalString('OBLYON_CURRENT_PRESET') !== '')	return '';
+		if (! empty($_SESSION['oblyon_current_preset_checked']))	return '';	// one detection per session : no repeated queries on every display when nothing matches
+		$_SESSION['oblyon_current_preset_checked']	= 1;
 		foreach (oblyon_get_presets() as $key => $preset) {
 			if (count(oblyon_preset_modified_sections($preset)) == 0) {
 				dolibarr_set_const($db, 'OBLYON_CURRENT_PRESET', $key, 'chaine', 0, 'Oblyon module', $conf->entity);
@@ -447,12 +471,19 @@
 			dol_syslog('oblyon_write_preset_file: cannot create '.$dirs['instance'], LOG_ERR);
 			return -1;
 		}
+		if (! is_writable($dirs['instance'])) {
+			dol_syslog('oblyon_write_preset_file: directory not writable '.$dirs['instance'], LOG_ERR);
+			return -1;
+		}
 		$json	= json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-		if ($json === false || file_put_contents($dirs['instance'].'/'.$key.'.json', $json."\n") === false) {
+		$file	= $dirs['instance'].'/'.$key.'.json';
+		// atomic write : a concurrent read never sees a truncated file
+		if ($json === false || @file_put_contents($file.'.tmp', $json."\n") === false || ! @rename($file.'.tmp', $file)) {
+			@unlink($file.'.tmp');
 			dol_syslog('oblyon_write_preset_file: cannot write '.$key.'.json', LOG_ERR);
 			return -1;
 		}
-		dolChmod($dirs['instance'].'/'.$key.'.json');
+		dolChmod($file);
 		oblyon_get_presets_reset();
 		return 1;
 	}
@@ -494,6 +525,12 @@
 		$preset	= oblyon_get_preset($key);
 		if ($preset === null || $preset['source'] != 'instance')	return -2;
 		$data	= oblyon_build_preset_data(($name !== '' ? $name : $preset['name']), ($description !== '' ? $description : $preset['description']), $sections, $preset['author']);
+		if (! empty($sections)) {	// partial update : the sections not rebuilt keep their current content instead of being dropped
+			$defs	= oblyon_presets_sections();
+			foreach ($preset['sections'] as $section => $values) {
+				if (! isset($data[$section]) && isset($defs[$section]))	$data[$section]	= ($defs[$section]['scalar'] ? reset($values) : $values);
+			}
+		}
 		$data['version']	= (string) ((int) $preset['version'] + 1);
 		return oblyon_write_preset_file($key, $data);
 	}
@@ -648,6 +685,7 @@
 	function oblyon_preset_color($preset, $name)
 	{
 		$value	= isset($preset['sections']['colors'][$name]) ? $preset['sections']['colors'][$name] : getDolGlobalString($name);
+		if (preg_match('/^#([0-9A-F])([0-9A-F])([0-9A-F])$/i', $value, $reg))	$value	= '#'.$reg[1].$reg[1].$reg[2].$reg[2].$reg[3].$reg[3];	// #RGB -> #RRGGBB
 		return preg_match('/^#[0-9A-F]{6}$/i', $value) ? $value : '#CCCCCC';
 	}
 
@@ -695,7 +733,7 @@
 				// Head : name (description as tooltip) + badges, then small icons (contrast warning, download, update, delete)
 				$sections	= implode(', ', array_map('oblyon_presets_section_label', array_keys($preset['sections'])));
 				$tooltip	= ($preset['description'] !== '' ? oblyon_preset_text($preset['description'])."\n" : '').$langs->trans('OblyonPresetSections').' : '.$sections;
-				$out	.= '<div class="oblyon-preset__head"><div class="oblyon-preset__name" title="'.dol_escape_htmltag($tooltip).'">'.oblyon_preset_text($preset['name'] !== '' ? $preset['name'] : $key);
+				$out	.= '<div class="oblyon-preset__head"><div class="oblyon-preset__name" title="'.dol_escape_htmltag($tooltip, 0, 1).'">'.oblyon_preset_text($preset['name'] !== '' ? $preset['name'] : $key);
 				if ($iscurrent)	$out	.= ' <span class="badge badge-status4 badge-status" title="'.dol_escape_htmltag($langs->trans('OblyonPresetCurrent')).'">'.$langs->trans('OblyonPresetCurrent').'</span>';
 				if ($modified)	$out	.= ' <span class="badge badge-status1 badge-status" title="'.dol_escape_htmltag($langs->trans('OblyonPresetModifiedHelp', implode(', ', array_map('oblyon_presets_section_label', $modified)))).'">'.$langs->trans('OblyonPresetModified').'</span>';
 				$out	.= '</div>';

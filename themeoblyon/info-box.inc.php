@@ -35,8 +35,8 @@ if (!defined('ISLOADEDBYSTEELSHEET')) {
 	display: block;
 	position: relative;
 	min-height: 96px;
-    <?php if(getDolGlobalString('OBLYON_INFOXBOX_BACKGROUND')) { ?>
-        background: <?php print getDolGlobalString('OBLYON_INFOXBOX_BACKGROUND'); ?> !important;
+    <?php if(oblyon_color_setting('OBLYON_INFOXBOX_BACKGROUND')) { // InfraS change ?>
+        background: <?php print oblyon_color_setting('OBLYON_INFOXBOX_BACKGROUND'); ?> !important;	/* InfraS change */
     <?php } else { ?>
 		background: var(--colorbline);	/* InfraS change */
     <?php } ?>
@@ -436,51 +436,51 @@ $conf->global->THEME_AGRESSIVENESS_RATIO = GETPOSTISSET('THEME_AGRESSIVENESS_RAT
 	border-radius: 5px;
 }
 
-.bg-infobox-action {
-    <?php echo $prefix; ?>color: <?php print colorAgressiveness(getDolGlobalString('OBLYON_INFOXBOX_ACTION_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?> !important;
+.bg-infobox-action {	/* InfraS change begin : couleurs par utilisateur (3.6.0) */
+    <?php echo $prefix; ?>color: <?php print colorAgressiveness(oblyon_color_setting('OBLYON_INFOXBOX_ACTION_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?> !important;
 }
 .bg-infobox-project {
-    <?php echo $prefix; ?>color: <?php print colorAgressiveness(getDolGlobalString('OBLYON_INFOXBOX_PROJECT_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?> !important;
+    <?php echo $prefix; ?>color: <?php print colorAgressiveness(oblyon_color_setting('OBLYON_INFOXBOX_PROJECT_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?> !important;
 }
 .bg-infobox-propal {
-    <?php echo $prefix; ?>color: <?php print colorAgressiveness(getDolGlobalString('OBLYON_INFOXBOX_CUSTOMER_PROPAL_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
+    <?php echo $prefix; ?>color: <?php print colorAgressiveness(oblyon_color_setting('OBLYON_INFOXBOX_CUSTOMER_PROPAL_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
 }
 .bg-infobox-facture {
-    <?php echo $prefix; ?>color: <?php print colorAgressiveness(getDolGlobalString('OBLYON_INFOXBOX_CUSTOMER_INVOICE_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
+    <?php echo $prefix; ?>color: <?php print colorAgressiveness(oblyon_color_setting('OBLYON_INFOXBOX_CUSTOMER_INVOICE_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
 }
 .bg-infobox-commande {
-    <?php echo $prefix; ?>color: <?php print colorAgressiveness(getDolGlobalString('OBLYON_INFOXBOX_CUSTOMER_ORDER_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
+    <?php echo $prefix; ?>color: <?php print colorAgressiveness(oblyon_color_setting('OBLYON_INFOXBOX_CUSTOMER_ORDER_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
 }
 .bg-infobox-supplier_proposal {
-    <?php echo $prefix; ?>color: <?php print colorAgressiveness(getDolGlobalString('OBLYON_INFOXBOX_SUPPLIER_PROPAL_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
+    <?php echo $prefix; ?>color: <?php print colorAgressiveness(oblyon_color_setting('OBLYON_INFOXBOX_SUPPLIER_PROPAL_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
 }
 .bg-infobox-invoice_supplier {
-    <?php echo $prefix; ?>color: <?php print colorAgressiveness(getDolGlobalString('OBLYON_INFOXBOX_SUPPLIER_INVOICE_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
+    <?php echo $prefix; ?>color: <?php print colorAgressiveness(oblyon_color_setting('OBLYON_INFOXBOX_SUPPLIER_INVOICE_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
 }
 .bg-infobox-order_supplier {
-	<?php echo $prefix; ?>color: <?php print colorAgressiveness(getDolGlobalString('OBLYON_INFOXBOX_SUPPLIER_ORDER_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
+	<?php echo $prefix; ?>color: <?php print colorAgressiveness(oblyon_color_setting('OBLYON_INFOXBOX_SUPPLIER_ORDER_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
 }
 .bg-infobox-contrat {
-	<?php echo $prefix; ?>color: <?php print colorAgressiveness(getDolGlobalString('OBLYON_INFOXBOX_CONTRAT_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
+	<?php echo $prefix; ?>color: <?php print colorAgressiveness(oblyon_color_setting('OBLYON_INFOXBOX_CONTRAT_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
 }
 .bg-infobox-bank_account {
-	<?php echo $prefix; ?>color: <?php print colorAgressiveness(getDolGlobalString('OBLYON_INFOXBOX_BANK_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
+	<?php echo $prefix; ?>color: <?php print colorAgressiveness(oblyon_color_setting('OBLYON_INFOXBOX_BANK_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
 }
 .bg-infobox-member {
-	<?php echo $prefix; ?>color: <?php print colorAgressiveness(getDolGlobalString('OBLYON_INFOXBOX_ADHERENT_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
+	<?php echo $prefix; ?>color: <?php print colorAgressiveness(oblyon_color_setting('OBLYON_INFOXBOX_ADHERENT_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
 }
 .bg-infobox-expensereport {
-	<?php echo $prefix; ?>color: <?php print colorAgressiveness(getDolGlobalString('OBLYON_INFOXBOX_EXPENSEREPORT_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
+	<?php echo $prefix; ?>color: <?php print colorAgressiveness(oblyon_color_setting('OBLYON_INFOXBOX_EXPENSEREPORT_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
 }
 .bg-infobox-holiday {
-	<?php echo $prefix; ?>color: <?php print colorAgressiveness(getDolGlobalString('OBLYON_INFOXBOX_HOLIDAY_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
+	<?php echo $prefix; ?>color: <?php print colorAgressiveness(oblyon_color_setting('OBLYON_INFOXBOX_HOLIDAY_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
 }
 .bg-infobox-ticket {
-    <?php echo $prefix; ?>color: <?php print colorAgressiveness(getDolGlobalString('OBLYON_INFOXBOX_TICKET_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
+    <?php echo $prefix; ?>color: <?php print colorAgressiveness(oblyon_color_setting('OBLYON_INFOXBOX_TICKET_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
 }
 .bg-infobox-cubes {
-	<?php echo $prefix; ?>color: <?php print colorAgressiveness(getDolGlobalString('OBLYON_INFOXBOX_MRP_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
-}
+	<?php echo $prefix; ?>color: <?php print colorAgressiveness(oblyon_color_setting('OBLYON_INFOXBOX_MRP_COLOR'), getDolGlobalString('THEME_AGRESSIVENESS_RATIO')); ?>  !important;
+}	/* InfraS change end */
 
 
 .fa-dol-action:before {
@@ -529,7 +529,7 @@ $conf->global->THEME_AGRESSIVENESS_RATIO = GETPOSTISSET('THEME_AGRESSIVENESS_RAT
 
 /* USING FONTAWESOME FOR WEATHER */
 .info-box-weather .info-box-icon{
-	background: <?php print getDolGlobalString('OBLYON_INFOXBOX_WEATHER_COLOR'); ?> !important;
+	background: <?php print oblyon_color_setting('OBLYON_INFOXBOX_WEATHER_COLOR'); ?> !important;	/* InfraS change */
 }
 .fa-weather-level0:before{
 	content: "\f185";

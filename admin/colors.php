@@ -71,7 +71,7 @@ if (in_array($presetaction, array('apply_preset', 'save_preset', 'saveas_preset'
 		$presetres	= oblyon_apply_preset($presetkey, $presetsections);
 		$presetmsg	= 'OblyonPresetApplied';
 	} elseif ($presetaction == 'save_preset') {
-		$presetres	= oblyon_update_preset($presetkey, $presetsections, GETPOST('preset_name', 'alphanohtml'), GETPOST('preset_desc', 'alphanohtml'));
+		$presetres	= oblyon_update_preset($presetkey, array(), GETPOST('preset_name', 'alphanohtml'), GETPOST('preset_desc', 'alphanohtml'));	// always the whole file (the screen has no section choice)
 		$presetmsg	= 'OblyonPresetSaved';
 	} elseif ($presetaction == 'saveas_preset') {
 		$presetkey	= strtolower(preg_replace('/[^a-z0-9_-]/i', '-', $presetkey));
@@ -95,6 +95,7 @@ if (in_array($presetaction, array('apply_preset', 'save_preset', 'saveas_preset'
 	} else {
 		$preseterrors	= array(-1 => 'OblyonPresetErrorWrite', -2 => 'OblyonPresetErrorKey', -3 => 'OblyonPresetErrorReserved', -4 => 'OblyonPresetErrorExists', -5 => 'OblyonPresetErrorFile');
 		if ($presetaction == 'apply_preset' || $presetaction == 'delete_preset' || $presetaction == 'save_preset')	$preseterrors[-2]	= 'OblyonPresetErrorUnknown';
+		if ($presetaction == 'apply_preset')	$preseterrors[-1]	= 'OblyonPresetErrorApply';	// -1 = SQL error, not a file error
 		setEventMessages($langs->trans(isset($preseterrors[$presetres]) ? $preseterrors[$presetres] : 'Error'), null, 'errors');
 	}
 	header('Location: '.$_SERVER['PHP_SELF']);
@@ -155,6 +156,7 @@ $listcolor	= array('top'		=> array('OBLYON_COLOR_TOPMENU_BCKGRD',
 																				'THEME_ELDY_BACKTITLE1'
 																				),
 										'OblyonColorGrpTabs'			=> array('THEME_ELDY_BACKTABACTIVE',
+																				'THEME_ELDY_BACKTABCARD1',	// InfraS add : fond de l'onglet actif d'une fiche, jusqu'ici absent de l'onglet (restait blanc dans un preset sombre)
 																				'OBLYON_COLOR_TEXTTABACTIVE'
 																				),
 										'OblyonColorGrpLines'			=> array('OBLYON_COLOR_BLINE',

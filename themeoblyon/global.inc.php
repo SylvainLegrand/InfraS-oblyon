@@ -73,22 +73,24 @@
 	--colorboxiconbg: #eee;
 	--refidnocolor:#444;
 	--tableforfieldcolor:#666;
-	--amountremaintopaycolor:<?php print getDolGlobalString('OBLYON_COLOR_AMOUNT_REMAIN', '#880000'); ?>;
-	--amountpaymentcomplete:<?php print getDolGlobalString('OBLYON_COLOR_AMOUNT_PAID', '#008800'); ?>;
-	--colorunpaid: <?php print getDolGlobalString('OBLYON_COLOR_AMOUNT_UNPAID', '#550000'); ?>;
-	--colorstatussuccess: <?php print getDolGlobalString('OBLYON_COLOR_STATUS_SUCCESS', '#00a65a'); ?>;
-	--colorstatusinfo: <?php print getDolGlobalString('OBLYON_COLOR_STATUS_INFO', '#00c0ef'); ?>;
-	--colorstatuswarning: <?php print getDolGlobalString('OBLYON_COLOR_STATUS_WARNING', '#f39c12'); ?>;
-	--colorstatusdanger: <?php print getDolGlobalString('OBLYON_COLOR_STATUS_DANGER', '#dd4b39'); ?>;
-	--colorstatusprimary: <?php print getDolGlobalString('OBLYON_COLOR_STATUS_PRIMARY', '#337ab7'); ?>;
-	--colorprogressbar: <?php print getDolGlobalString('OBLYON_COLOR_PROGRESSBAR', '#3c8dbc'); ?>;
-	--colortimelineitem: <?php print getDolGlobalString('OBLYON_COLOR_TIMELINEITEM', '#0073b7'); ?>;
-	--colorweatherlevel0: <?php print getDolGlobalString('OBLYON_COLOR_WEATHER_LEVEL0', '#cfbf00'); ?>;
-	--colorweatherlevel1: <?php print getDolGlobalString('OBLYON_COLOR_WEATHER_LEVEL1', '#bc9526'); ?>;
-	--colorweatherlevel2: <?php print getDolGlobalString('OBLYON_COLOR_WEATHER_LEVEL2', '#b16000'); ?>;
-	--colorweatherlevel3: <?php print getDolGlobalString('OBLYON_COLOR_WEATHER_LEVEL3', '#b04000'); ?>;
-	--colorweatherlevel4: <?php print getDolGlobalString('OBLYON_COLOR_WEATHER_LEVEL4', '#993013'); ?>;
-	--colorinfoboxupdate: <?php print getDolGlobalString('OBLYON_COLOR_INFOBOX_UPDATE', '#bc9525'); ?>;
+	/* InfraS change begin : couleurs par utilisateur (3.6.0) : oblyon_color_setting() */
+	--amountremaintopaycolor:<?php print oblyon_color_setting('OBLYON_COLOR_AMOUNT_REMAIN', '#880000'); ?>;
+	--amountpaymentcomplete:<?php print oblyon_color_setting('OBLYON_COLOR_AMOUNT_PAID', '#008800'); ?>;
+	--colorunpaid: <?php print oblyon_color_setting('OBLYON_COLOR_AMOUNT_UNPAID', '#550000'); ?>;
+	--colorstatussuccess: <?php print oblyon_color_setting('OBLYON_COLOR_STATUS_SUCCESS', '#00a65a'); ?>;
+	--colorstatusinfo: <?php print oblyon_color_setting('OBLYON_COLOR_STATUS_INFO', '#00c0ef'); ?>;
+	--colorstatuswarning: <?php print oblyon_color_setting('OBLYON_COLOR_STATUS_WARNING', '#f39c12'); ?>;
+	--colorstatusdanger: <?php print oblyon_color_setting('OBLYON_COLOR_STATUS_DANGER', '#dd4b39'); ?>;
+	--colorstatusprimary: <?php print oblyon_color_setting('OBLYON_COLOR_STATUS_PRIMARY', '#337ab7'); ?>;
+	--colorprogressbar: <?php print oblyon_color_setting('OBLYON_COLOR_PROGRESSBAR', '#3c8dbc'); ?>;
+	--colortimelineitem: <?php print oblyon_color_setting('OBLYON_COLOR_TIMELINEITEM', '#0073b7'); ?>;
+	--colorweatherlevel0: <?php print oblyon_color_setting('OBLYON_COLOR_WEATHER_LEVEL0', '#cfbf00'); ?>;
+	--colorweatherlevel1: <?php print oblyon_color_setting('OBLYON_COLOR_WEATHER_LEVEL1', '#bc9526'); ?>;
+	--colorweatherlevel2: <?php print oblyon_color_setting('OBLYON_COLOR_WEATHER_LEVEL2', '#b16000'); ?>;
+	--colorweatherlevel3: <?php print oblyon_color_setting('OBLYON_COLOR_WEATHER_LEVEL3', '#b04000'); ?>;
+	--colorweatherlevel4: <?php print oblyon_color_setting('OBLYON_COLOR_WEATHER_LEVEL4', '#993013'); ?>;
+	--colorinfoboxupdate: <?php print oblyon_color_setting('OBLYON_COLOR_INFOBOX_UPDATE', '#bc9525'); ?>;
+	/* InfraS change end */
 	--amountremaintopaybackcolor:none;
 	--productlinestockod: #002200;
 	--productlinestocktoolow: #884400;
@@ -3633,7 +3635,7 @@ div.login a:hover {
 
 .db-menu__logo__link {
 	display: block;
-	<?php if(getDolGlobalString('OBLYON_COLOR_LOGO_BCKGRD')) { ?>
+	<?php if(oblyon_color_setting('OBLYON_COLOR_LOGO_BCKGRD')) { // InfraS change ?>
 		background: var(--logo_background_color);
 	<?php } else { ?>
 		background: #FFF;
@@ -5695,8 +5697,8 @@ div .tdtop {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	text-align: center;
-	<?php if(getDolGlobalString('OBLYON_INFOXBOX_BACKGROUND')) { ?>
-		background: <?php print getDolGlobalString('OBLYON_INFOXBOX_BACKGROUND'); ?> !important;
+	<?php if(oblyon_color_setting('OBLYON_INFOXBOX_BACKGROUND')) { // InfraS change ?>
+		background: <?php print oblyon_color_setting('OBLYON_INFOXBOX_BACKGROUND'); ?> !important;	/* InfraS change */
 	<?php } else { ?>
 	background: var(--colorbline);	/* InfraS change */
 	<?php } ?>
@@ -8457,7 +8459,7 @@ ul.ulmenu {
 	border-bottom-width: 0px !important;
 }
 .alilevel0 {
-	color: var(--colortext) !important;	/* InfraS change : hors bandeau de titre */
+	color: var(--colorfline) !important;	/* InfraS change : hors bandeau de titre, texte des lignes */
 }
 .ulmenu {
 	box-shadow: none !important;
@@ -9656,8 +9658,8 @@ ul.ulmenu {
 	border-bottom-width: 0px !important;
 }
 .alilevel0 {
-	color: var(--colortext) !important;	/* InfraS change : hors bandeau de titre */
-	background: var(--colorbackmobilemenu);
+	color: var(--colorfline) !important;	/* InfraS change : hors bandeau de titre, texte et fond des lignes (lisible en preset sombre) */
+	background: var(--colorbline);	/* InfraS change */
 }
 .ulmenu {
 	box-shadow: none !important;
@@ -10956,7 +10958,7 @@ print getDolGlobalString('THEME_CUSTOM_CSS');
 /* ============================================================================== */
 <?php if (getDolGlobalString('THEME_ADD_BACKGROUND_ON_INPUT')) { // A7 : fond coloré sur les champs (style eldy) ?>
 input.flat, textarea.flat, select.flat, div.tabBar input, div.tabBar select, div.tabBar textarea {
-	background-color: <?php print getDolGlobalString('OBLYON_COLOR_INPUT_ADD_BCKGRD', '#f8f8fa'); ?> !important;
+	background-color: <?php print oblyon_color_setting('OBLYON_COLOR_INPUT_ADD_BCKGRD', '#f8f8fa'); ?> !important;	/* InfraS change */
 }
 <?php } ?>
 <?php if (getDolGlobalString('THEME_SATURATE_RATIO')) { // A8 : saturation des icônes du tableau de bord ?>
@@ -10988,7 +10990,7 @@ table.liste tr:last-child > td:last-child, table.liste tr:last-child > th:last-c
 <?php } ?>
 <?php if (getDolGlobalString('THEME_ELDY_SHADOW_ON_SMALL_BOXES')) { // B2 : ombres petites boîtes ?>
 .firstcolumn table.noborder, .secondcolumn table.noborder {
-	box-shadow: 5px 5px 5px <?php print getDolGlobalString('OBLYON_COLOR_BOX_SHADOW', '#f0f0f0'); ?>;
+	box-shadow: 5px 5px 5px <?php print oblyon_color_setting('OBLYON_COLOR_BOX_SHADOW', '#f0f0f0'); ?>;	/* InfraS change */
 }
 <?php } ?>
 <?php if (getDolGlobalString('THEME_ELDY_USECOMOACTROW')) { // B4 : lignes de tableau plus hautes ?>

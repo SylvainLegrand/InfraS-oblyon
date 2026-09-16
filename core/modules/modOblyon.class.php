@@ -95,6 +95,7 @@
 					//'ihm_admin:-dashboard',
 					//'ihm_admin:-login',
 					//'ihm_admin:+template_oblyon:Colors:oblyon@oblyon::/oblyon/admin/colors.php',
+					'user:+oblyoncolors:OblyonUserColorsTab:oblyon@oblyon:1:/oblyon/user/colors.php?id=__ID__',	// InfraS add : couleurs par utilisateur (3.6.0) ; condition 1 = visible pour l'utilisateur sur sa propre fiche, la page applique les droits
 				);
 			}
 			if (!isModEnabled('oblyon')) {
