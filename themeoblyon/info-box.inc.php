@@ -38,22 +38,30 @@ if (!defined('ISLOADEDBYSTEELSHEET')) {
     <?php if(getDolGlobalString('OBLYON_INFOXBOX_BACKGROUND')) { ?>
         background: <?php print getDolGlobalString('OBLYON_INFOXBOX_BACKGROUND'); ?> !important;
     <?php } else { ?>
-		background: #fff;
+		background: var(--colorbline);	/* InfraS change */
     <?php } ?>
 	width: 100%;
-	box-shadow: 1px 1px 20px rgba(192, 192, 192, 0.2);
-	border-radius: 2px;
-	border: 1px solid #e9e9e9;
-	/* border: 1px solid var(--colorbacktitle1); */
+	/* InfraS change begin : vignette = carte des jetons (rayon, ombre legere, cadre neutre) */
+	box-shadow: var(--oblyon-shadow-sm);
+	border-radius: var(--oblyon-radius);
+	border: 1px solid var(--oblyon-border);
+	transition: box-shadow var(--oblyon-transition);
+	/* InfraS change end */
 	margin-bottom: 15px;
+}
+.info-box:hover {
+	box-shadow: var(--oblyon-shadow-md);	/* InfraS add */
 }
 .info-box.info-box-sm {
 	min-height: 80px;
 	margin-bottom: 10px;
 	/* background: #fff; */
 }
-.opened-dash-board-wrap .info-box, .opened-dash-board-wrap .info-box .info-box-icon  {
-	border-radius: 0 0 0 15px;
+.opened-dash-board-wrap .info-box {
+	border-radius: var(--oblyon-radius);	/* InfraS change : plus de coin unique arrondi */
+}
+.opened-dash-board-wrap .info-box .info-box-icon {
+	border-radius: var(--oblyon-radius) 0 0 var(--oblyon-radius);	/* InfraS change */
 }
 /*.opened-dash-board-wrap .box-flex-item {
 	border-radius: 10px;
@@ -94,10 +102,7 @@ if (!defined('ISLOADEDBYSTEELSHEET')) {
 	transition: width .6s ease;
 }
 .info-box-icon {
-	border-top-left-radius: 2px;
-	border-top-right-radius: 0;
-	border-bottom-right-radius: 0;
-	border-bottom-left-radius: 2px;
+	border-radius: var(--oblyon-radius) 0 0 var(--oblyon-radius);	/* InfraS change */
 	display: block;
 	overflow: hidden;
 	float: left;
@@ -120,10 +125,7 @@ if (!defined('ISLOADEDBYSTEELSHEET')) {
 	line-height: 92px;
 }
 .info-box-order {
-	border-top-left-radius: 2px;
-	border-top-right-radius: 0;
-	border-bottom-right-radius: 0;
-	border-bottom-left-radius: 2px;
+	border-radius: var(--oblyon-radius) 0 0 var(--oblyon-radius);	/* InfraS change */
 	display: block;
 	overflow: hidden;
 	float: left;
@@ -139,7 +141,7 @@ if (!defined('ISLOADEDBYSTEELSHEET')) {
 	font-size: 2em;
 }
 .opened-dash-board-wrap .info-box-sm .info-box-icon {
-	border-radius: 0 0 0 20px;
+	border-radius: var(--oblyon-radius) 0 0 var(--oblyon-radius);	/* InfraS change */
 	line-height: 80px;
 }
 .info-box-module .info-box-icon {
@@ -152,22 +154,43 @@ if (!defined('ISLOADEDBYSTEELSHEET')) {
 	max-width: 60%;
 }
 
-a.info-box-text.info-box-text-a {
+a.info-box-text.info-box-text-a,
+span.info-box-text.info-box-text-a {	/* InfraS change : le span "displaycontents" du badge de retard prenait display:block (regle .info-box-text) et passait a la ligne */
 	/* display: table-cell; */
 	display: contents;
+}
+.displaycontents {	/* InfraS add : classe utilitaire du core (presente dans eldy, absente d'Oblyon) */
+	display: contents !important;
 }
 a.info-box-text-a i.fa.fa-exclamation-triangle, span.badge i.fa.fa-exclamation-triangle {
 	font-size: 0.9em;
 }
 
+/* InfraS change begin : ligne de vignette en flex : libelle tronque, badges toujours sur la meme ligne (la largeur fixe calc(100% - 92px)
+   laissait le badge "en retard", place dans un second inline-block par le core, passer a la ligne et grandir la vignette) */
 .info-box-line {
 	line-height: 1.35em;
+	display: flex;
+	align-items: center;
+	column-gap: 4px;
+	white-space: nowrap;
+}
+.info-box-line > div.inline-block {
+	flex: 0 0 auto;
+	white-space: nowrap;
+}
+.info-box-line .badge {
+	padding-left: .4em;
+	padding-right: .4em;
 }
 .info-box-line-text {
+	flex: 1 1 auto;
+	min-width: 0;
 	overflow: hidden;
-	width: calc(100% - 92px);
-	max-width: calc(100% - 82px);
+	width: auto;
+	max-width: none;
 	text-overflow: ellipsis;
+/* InfraS change end */
 }
 
 .info-box-icon-text {
@@ -364,7 +387,7 @@ $conf->global->THEME_AGRESSIVENESS_RATIO = GETPOSTISSET('THEME_AGRESSIVENESS_RAT
 	<?php if ($prefix) { ?>
 	color: #fff !important;
 	<?php } else { ?>
-	background-color: #fff !important;
+	background-color: var(--colorbline) !important;	/* InfraS change */
 	<?php } ?>
     opacity: 0.95;
     <?php if (GETPOSTISSET('THEME_AGRESSIVENESS_RATIO')) { ?>

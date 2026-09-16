@@ -43,6 +43,13 @@
 	define('ISLOADEDBYSTEELSHEET', '1');
 	session_cache_limiter('public');
 	require_once __DIR__.'/../../main.inc.php'; // __DIR__ allow this script to be included in custom themes
+	// InfraS add begin : disposition mobile (3.5.0) : la largeur d'ecran decide (mobile.inc.php), jamais l'agent utilisateur : l'indicateur
+	// "petit ecran" du core (base sur le navigateur) ne pilote plus les 30 branches de global.inc.php, qui produisent la feuille bureau
+	if (getDolGlobalInt('OBLYON_MOBILE_LAYOUT', 1) && GETPOST('optioncss', 'aZ09') != 'print') {
+		$conf->dol_optimize_smallscreen	= 0;
+		$conf->browser->layout			= 'classic';	// idem pour les 12 branches "layout == phone" (colonnes des fiches) : gerees par largeur dans mobile.inc.php
+	}
+	// InfraS add end
 	require __DIR__.'/theme_vars.inc.php';
 	if (defined('THEME_ONLY_CONSTANT'))	return;
 	require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
@@ -322,6 +329,35 @@
 	$infras_radius	= getDolGlobalInt('THEME_ELDY_BORDER_RADIUS', 6);
 	if ($infras_radius <= 0)	$infras_radius	= 6;	// valeur nulle => rayon visible par defaut
 
+	// InfraS add begin : jetons de design 3.4.1 - couleurs neutres derivees du preset (melange fond des lignes / texte des lignes), bordure des champs selon l'option
+	if (! function_exists('oblyon_mix_colors')) {
+		/**
+		 *	Mix two colors : $ratio = 0 gives $hex1, 1 gives $hex2
+		 *	@param	string	$hex1	Color 1 (#RRGGBB or r,g,b)
+		 *	@param	string	$hex2	Color 2
+		 *	@param	float	$ratio	Weight of color 2 (0..1)
+		 *	@return	string			#RRGGBB
+		 */
+		function oblyon_mix_colors($hex1, $hex2, $ratio)
+		{
+			$a		= colorStringToArray($hex1);
+			$b		= colorStringToArray($hex2);
+			$out	= array();
+			for ($i = 0; $i < 3; $i++) {
+				$out[]	= max(0, min(255, (int) round($a[$i] + ($b[$i] - $a[$i]) * $ratio)));
+			}
+			return '#'.colorArrayToHex($out);
+		}
+	}
+	$oblyon_border			= oblyon_mix_colors($colorbline, $colorfline, 0.14);	// separateurs, cadres discrets
+	$oblyon_border_strong	= oblyon_mix_colors($colorbline, $colorfline, 0.30);	// cadres marques (champs avec option bordure, fieldset)
+	$oblyon_neutral_bg		= oblyon_mix_colors($colorbline, $colorfline, 0.05);	// fonds discrets (sections, champs desactives)
+	$oblyon_muted_text		= oblyon_mix_colors($colorfline, $colorbline, 0.40);	// textes secondaires (placeholders, aides)
+	$oblyon_input_border	= getDolGlobalString('THEME_SHOW_BORDER_ON_INPUT') ? $oblyon_border_strong : $oblyon_border;
+	// Page de connexion : fond = OBLYON_COLOR_LOGIN_BCKGRD (constante existante, jusqu'ici non branchee), texte du titre choisi selon la clarte de ce fond
+	$login_bgcolor_rgb		= join(',', colorStringToArray($login_bgcolor));	// txt_color() attend une variable (passage par reference)
+	$login_txtcolor			= (txt_color($login_bgcolor_rgb) == 'FFFFFF') ? '#FFFFFF' : $colorfline;
+	// InfraS add end
 	require __DIR__.'/global.inc.php';
 
 	if (is_object($db))	$db->close();
