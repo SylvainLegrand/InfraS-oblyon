@@ -66,7 +66,7 @@
 			$this->picto					= 'inovea@'.$this->name;																// Name of image file used for this module. If in theme => 'pictovalue' ; if in module => 'pictovalue@module' under name object_pictovalue.png
 			$this->module_parts				= array('menus'	=> 1,
 													'js'	=> array('/'.$this->name.'/js/pushy.js', '/'.$this->name.'/js/oblyon.js?v='.urlencode(trim($this->version))),	// InfraS change : version dans l'adresse (le serveur met les .js en cache 30 jours : sans cela les navigateurs gardent l'ancien script apres une mise a jour)
-													'css'	=> array('css'	=> ('/'.$this->name.'/css/'.$this->name.'.css'), ('/theme/'.$this->name.'/custom.css.php'), ('/'.$this->name.'/css/font.css')),
+													'css'	=> array('css'	=> ('/'.$this->name.'/css/'.$this->name.'.css.php'), ('/theme/'.$this->name.'/custom.css.php'), ('/'.$this->name.'/css/font.css.php')),	// InfraS change : oblyon.css et font.css servis via .css.php (Dolibarr ajoute alors lang/theme/revision a l'adresse : plus de feuille figee un mois par le cache public Apache puis Cloudflare), cf. css/oblyon.css.php
 													'tpl'	=> 0,
 													'hooks' => array('data' => array('main'), 'entity' => '0')
 													);
@@ -95,7 +95,7 @@
 					//'ihm_admin:-dashboard',
 					//'ihm_admin:-login',
 					//'ihm_admin:+template_oblyon:Colors:oblyon@oblyon::/oblyon/admin/colors.php',
-					'user:+oblyoncolors:OblyonUserColorsTab:oblyon@oblyon:1:/oblyon/user/colors.php?id=__ID__',	// InfraS add : couleurs par utilisateur (3.6.0) ; condition 1 = visible pour l'utilisateur sur sa propre fiche, la page applique les droits
+					'user:+oblyoncolors:OblyonUserColorsTab:oblyon@oblyon:$user->hasRight(\'oblyon\', \'usercolors\'):/oblyon/user/colors.php?id=__ID__',	// InfraS add : couleurs par utilisateur (3.6.0) ; onglet visible avec le droit usercolors ($user = visiteur), la page revérifie
 				);
 			}
 			if (!isModEnabled('oblyon')) {
@@ -105,7 +105,14 @@
 			$this->dictionaries	= array();	// Dictionaries
 			$this->boxes		= array();	// List of boxes
 			$this->cronjobs		= array();	// List of cron jobs entries to add
+			// InfraS add begin : droit "Regler ses couleurs personnelles" (onglet Couleurs de la fiche utilisateur, 3.6.0). Attribue aux admins a l'activation ; les autres par l'onglet Permissions
 			$this->rights		= array();	// Permission array used by this module
+			$r					= 0;
+			$this->rights[$r][0]	= $this->numero.$r;	// 4325730
+			$this->rights[$r][1]	= $langs->trans('OblyonPermUserColors');
+			$this->rights[$r][3]	= 0;
+			$this->rights[$r][4]	= 'usercolors';
+			// InfraS add end
 			$this->menu			= array();	// List of menus to add
 		}
 

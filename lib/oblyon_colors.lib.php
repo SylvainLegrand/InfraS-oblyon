@@ -76,7 +76,58 @@
 	}
 
 	/**
-	*	Colour setting : the personal value of the user when his personal colours are on and the value looks like a colour, else the instance value
+	*	Single storage format (3.7.0) : '#RRGGBB'. An 'r,g,b' value (written by the core "Display setup" pages for 14 THEME_ELDY_* constants, or an old default of theme_vars.inc.php)
+	*	is converted ; a 6-digit hex is kept (upper case) ; anything else is returned as is, or replaced by $fallback when given (e.g. '0.0.0')
+	*
+	*	@param		string	$value		Value
+	*	@param		string	$fallback	Value returned when $value is neither '#RRGGBB' nor 'r,g,b' ('' = return $value unchanged)
+	*	@return		string
+	**/
+	function oblyon_color_to_hex($value, $fallback = '')
+	{
+		$value	= trim((string) $value);
+		if (preg_match('/^#[0-9a-f]{6}$/i', $value))	return strtoupper($value);
+		if (preg_match('/^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})$/', $value, $reg) && (int) $reg[1] <= 255 && (int) $reg[2] <= 255 && (int) $reg[3] <= 255) {
+			return sprintf('#%02X%02X%02X', (int) $reg[1], (int) $reg[2], (int) $reg[3]);
+		}
+		return ($fallback !== '' ? $fallback : $value);
+	}
+
+	/**
+	*	Rewrite the stored colours that are still 'r,g,b' as '#RRGGBB' (3.7.0) : the instance constants (llx_const, $tmpuser = null) or the personal colours of a user (llx_user_param).
+	*	Idempotent, one write per converted value, CSS revision bumped when something changed. Called when the Colors tabs open.
+	*
+	*	@param		User|null	$tmpuser	User whose personal colours are normalized, null = instance constants
+	*	@return		int					Number of converted values
+	**/
+	function oblyon_colors_normalize_stored($tmpuser = null)
+	{
+		global $db, $conf;
+
+		require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
+		$count	= 0;
+		foreach (oblyon_user_colors_keys() as $name) {
+			if ($tmpuser === null) {
+				$value	= getDolGlobalString($name);
+			} else {
+				if (empty($tmpuser->conf) || ! isset($tmpuser->conf->$name))	continue;
+				$value	= (string) $tmpuser->conf->$name;
+			}
+			if (! preg_match('/^\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}$/', $value))	continue;
+			$hex	= oblyon_color_to_hex($value);
+			if ($hex === $value)	continue;
+			if ($tmpuser === null) {
+				if (dolibarr_set_const($db, $name, $hex, 'chaine', 0, 'Oblyon module', $conf->entity) > 0)	$count++;
+			} else {
+				if (dol_set_user_param($db, $conf, $tmpuser, array($name => $hex)) > 0)	$count++;
+			}
+		}
+		if ($count)	dolibarr_set_const($db, 'MAIN_IHM_PARAMS_REV', getDolGlobalInt('MAIN_IHM_PARAMS_REV') + 1, 'chaine', 0, '', $conf->entity);
+		return $count;
+	}
+
+	/**
+	*	Colour setting : the personal value of the user when his personal colours are on and the value looks like a colour, else the instance value ; 'r,g,b' converted to '#RRGGBB' (3.7.0)
 	*
 	*	@param		string		$name		Constant name
 	*	@param		string		$default	Default when neither the user nor the instance defines it
@@ -91,9 +142,50 @@
 		}
 		if (oblyon_user_colors_enabled($tmpuser) && isset($tmpuser->conf->$name)) {
 			$value	= (string) $tmpuser->conf->$name;
-			if (oblyon_color_is_valid($value, $name))	return $value;
+			if (oblyon_color_is_valid($value, $name))	return oblyon_color_to_hex($value);
 		}
-		return getDolGlobalString($name, $default);
+		return oblyon_color_to_hex(getDolGlobalString($name, $default));
+	}
+
+	/**
+	*	Colour setting that must be a real colour : the value (user then instance) when it is '#RRGGBB', else the default.
+	*	'' and '#' (inherit convention) fall back to the default : for the tokens painted as plain CSS colours (3.7.0)
+	*
+	*	@param		string		$name		Constant name
+	*	@param		string		$default	Default '#RRGGBB'
+	*	@param		User|null	$tmpuser	User (null = current user)
+	*	@return		string
+	**/
+	function oblyon_color_setting_hex($name, $default, $tmpuser = null)
+	{
+		$value	= oblyon_color_setting($name, '', $tmpuser);
+		return (preg_match('/^#[0-9a-f]{6}$/i', $value) ? $value : $default);
+	}
+
+	/**
+	*	Text colour to paint on a background : the one of two candidates with the best WCAG contrast (3.7.0 : status badges, whose text was white or the row text whatever the background)
+	*
+	*	@param		string	$background		Background '#RRGGBB'
+	*	@param		string	$dark			Dark candidate
+	*	@param		string	$light			Light candidate
+	*	@return		string					$dark or $light ($light when the background is not a colour)
+	**/
+	function oblyon_text_on($background, $dark = '#1C1C1C', $light = '#FFFFFF')
+	{
+		$lum	= function ($hex) {
+			$hex	= ltrim($hex, '#');
+			if (! preg_match('/^[0-9a-f]{6}$/i', $hex))	return null;
+			$out	= array();
+			foreach (str_split($hex, 2) as $part) {
+				$c		= hexdec($part) / 255;
+				$out[]	= ($c <= 0.03928) ? $c / 12.92 : pow(($c + 0.055) / 1.055, 2.4);
+			}
+			return 0.2126 * $out[0] + 0.7152 * $out[1] + 0.0722 * $out[2];
+		};
+		$lb	= $lum($background);
+		if ($lb === null)	return $light;
+		$ratio	= function ($l1, $l2) { return (max($l1, $l2) + 0.05) / (min($l1, $l2) + 0.05); };
+		return ($ratio($lum($dark), $lb) >= $ratio($lum($light), $lb)) ? $dark : $light;
 	}
 
 	/**
@@ -104,7 +196,8 @@
 	**/
 	function oblyon_user_colors_list()
 	{
-		$top	= array('OBLYON_COLOR_TOPMENU_BCKGRD', 'OBLYON_COLOR_TOPMENU_BCKGRD_HOVER', 'OBLYON_COLOR_TOPMENU_TXT', 'OBLYON_COLOR_TOPMENU_TXT_ACTIVE', 'OBLYON_COLOR_TOPMENU_TXT_HOVER');
+		$top	= array('OBLYON_COLOR_TOPMENU_BCKGRD', 'OBLYON_COLOR_TOPMENU_BCKGRD_HOVER', 'OBLYON_COLOR_TOPMENU_TXT', 'OBLYON_COLOR_TOPMENU_TXT_ACTIVE', 'OBLYON_COLOR_TOPMENU_TXT_HOVER',
+						'OBLYON_COLOR_TOPMENU_BCKGRD_SEL', 'OBLYON_COLOR_TOPMENU_TXT_SEL');	// 3.7.0 : entree selectionnee
 		$left	= array('OBLYON_COLOR_LEFTMENU_BCKGRD', 'OBLYON_COLOR_LEFTMENU_BCKGRD_HOVER', 'OBLYON_COLOR_LEFTMENU_TXT', 'OBLYON_COLOR_LEFTMENU_TXT_ACTIVE', 'OBLYON_COLOR_LEFTMENU_TXT_HOVER');
 		$list	= array();
 		if (!getDolGlobalString('MAIN_MENU_INVERT')) {
@@ -118,18 +211,23 @@
 		$list['OblyonColorGrpMessages']			= array('OBLYON_COLOR_INFO_BORDER', 'OBLYON_COLOR_INFO_BCKGRD', 'OBLYON_COLOR_INFO_TEXT', 'OBLYON_COLOR_WARNING_BORDER', 'OBLYON_COLOR_WARNING_BCKGRD', 'OBLYON_COLOR_WARNING_TEXT',
 														'OBLYON_COLOR_ERROR_BORDER', 'OBLYON_COLOR_ERROR_BCKGRD', 'OBLYON_COLOR_ERROR_TEXT', 'OBLYON_COLOR_NOTIF_INFO_BCKGRD', 'OBLYON_COLOR_NOTIF_INFO_TEXT',
 														'OBLYON_COLOR_NOTIF_WARNING_BCKGRD', 'OBLYON_COLOR_NOTIF_WARNING_TEXT', 'OBLYON_COLOR_NOTIF_ERROR_BCKGRD', 'OBLYON_COLOR_NOTIF_ERROR_TEXT');
-		$list['OblyonColorGrpBackgrounds']		= array('OBLYON_COLOR_MAIN', 'OBLYON_COLOR_BCKGRD', 'OBLYON_COLOR_INPUT_BCKGRD', 'OBLYON_COLOR_INPUT_ADD_BCKGRD', 'OBLYON_COLOR_LOGO_BCKGRD', 'OBLYON_COLOR_LOGIN_BCKGRD');
-		$list['OblyonColorGrpText']				= array('THEME_ELDY_TEXT', 'THEME_ELDY_TEXTLINK');
+		$list['OblyonColorGrpBackgrounds']		= array('OBLYON_COLOR_MAIN', 'OBLYON_COLOR_BCKGRD', 'OBLYON_COLOR_INPUT_BCKGRD', 'OBLYON_COLOR_INPUT_ADD_BCKGRD', 'OBLYON_COLOR_OVERLAY_BCKGRD', 'OBLYON_COLOR_LOGO_BCKGRD', 'OBLYON_COLOR_LOGIN_BCKGRD');
+		$list['OblyonColorGrpText']				= array('THEME_ELDY_TEXT', 'THEME_ELDY_TEXTLINK', 'OBLYON_COLOR_ICON_TEXT');
 		$list['OblyonColorGrpTitles']			= array('OBLYON_COLOR_BTITLE', 'OBLYON_COLOR_STITLE', 'THEME_ELDY_TEXTTITLE', 'THEME_ELDY_TEXTTITLENOTAB', 'THEME_ELDY_TOPBORDER_TITLE1', 'THEME_ELDY_BACKTITLE1');
 		$list['OblyonColorGrpTabs']				= array('THEME_ELDY_BACKTABACTIVE', 'THEME_ELDY_BACKTABCARD1', 'OBLYON_COLOR_TEXTTABACTIVE');
 		$list['OblyonColorGrpLines']			= array('OBLYON_COLOR_BLINE', 'OBLYON_COLOR_FLINE', 'THEME_ELDY_USE_HOVER', 'THEME_ELDY_USE_CHECKED', 'OBLYON_COLOR_FLINE_HOVER',
 														'THEME_ELDY_LINEIMPAIR1', 'THEME_ELDY_LINEIMPAIR2', 'THEME_ELDY_LINEPAIR1', 'THEME_ELDY_LINEPAIR2', 'THEME_ELDY_LINEBREAK');
 		$list['OblyonColorGrpTotal']			= array('OBLYON_COLOR_BTOTAL', 'OBLYON_COLOR_FTOTAL');
 		$list['OblyonColorGrpDate']				= array('OBLYON_COLOR_FDATE_DEFAULT', 'OBLYON_COLOR_FDATE_SELECTED');
+		$list['OblyonColorGrpAgenda']			= array('OBLYON_COLOR_CAL_EVENT_TXT', 'OBLYON_COLOR_CAL_WEEKEND_BCKGRD', 'OBLYON_COLOR_CAL_HOLIDAY_BCKGRD');	// 3.7.0
+		$list['OblyonColorGrpTimeline']			= array('OBLYON_COLOR_TIMELINE_BCKGRD', 'OBLYON_COLOR_TIMELINE_PRIVATE_BCKGRD');	// 3.7.0
 		$list['OblyonColorGrpNatures']			= array('THEME_ELDY_PROSPECTBACK', 'THEME_ELDY_CUSTOMERBACK', 'THEME_ELDY_VENDORBACK', 'THEME_ELDY_USERBACK', 'THEME_ELDY_COLORNATURE');
 		$list['OblyonColorGrpMembers']			= array('THEME_ELDY_MEMBER_COMPANYBACK', 'THEME_ELDY_MEMBER_INDIVIDUALBACK', 'THEME_ELDY_COLORMEMBER');
 		$list['OblyonColorGrpDashboard']		= array('OBLYON_COLOR_BOX_SHADOW', 'OBLYON_COLOR_INFOBOX_BCKGRD1', 'OBLYON_COLOR_INFOBOX_BCKGRD2', 'OBLYON_COLOR_BORDER_ACTIONCOLUMN');
-		$list['OblyonColorGrpAmounts']			= array('OBLYON_COLOR_AMOUNT_REMAIN', 'OBLYON_COLOR_AMOUNT_PAID', 'OBLYON_COLOR_AMOUNT_UNPAID');
+		$list['OblyonColorGrpAmounts']			= array('OBLYON_COLOR_AMOUNT_TEXT', 'OBLYON_COLOR_AMOUNT_REMAIN', 'OBLYON_COLOR_AMOUNT_PAID', 'OBLYON_COLOR_AMOUNT_UNPAID');
+		$list['OblyonColorGrpStock']			= array('OBLYON_COLOR_STOCK_OK', 'OBLYON_COLOR_STOCK_LOW', 'OBLYON_COLOR_STOCK_EXIT');	// 3.7.0
+		$list['OblyonColorGrpBadges']			= array('OBLYON_COLOR_BADGE_DRAFT', 'OBLYON_COLOR_BADGE_VALIDATED', 'OBLYON_COLOR_BADGE_APPROVED', 'OBLYON_COLOR_BADGE_WAITING', 'OBLYON_COLOR_BADGE_ACTIVE',
+														'OBLYON_COLOR_BADGE_CLOSED', 'OBLYON_COLOR_BADGE_CANCELED', 'OBLYON_COLOR_BADGE_ERROR', 'OBLYON_COLOR_BADGE_DONE');	// 3.7.0 : text colour automatic (oblyon_text_on)
 		$list['OblyonColorGrpStatus']			= array('OBLYON_COLOR_STATUS_SUCCESS', 'OBLYON_COLOR_STATUS_INFO', 'OBLYON_COLOR_STATUS_WARNING', 'OBLYON_COLOR_STATUS_DANGER', 'OBLYON_COLOR_STATUS_PRIMARY', 'OBLYON_COLOR_PROGRESSBAR', 'OBLYON_COLOR_TIMELINEITEM');
 		$list['OblyonColorGrpWeather']			= array('OBLYON_COLOR_WEATHER_LEVEL0', 'OBLYON_COLOR_WEATHER_LEVEL1', 'OBLYON_COLOR_WEATHER_LEVEL2', 'OBLYON_COLOR_WEATHER_LEVEL3', 'OBLYON_COLOR_WEATHER_LEVEL4', 'OBLYON_COLOR_INFOBOX_UPDATE');
 		$list['OblyonColorGrpAutocomplete']		= array('OBLYON_COLOR_AUTOCOMPLETE_BCKGRD', 'OBLYON_COLOR_AUTOCOMPLETE_TEXT');
@@ -187,4 +285,221 @@
 		if (!oblyon_color_is_valid($value, $name))	return dol_escape_htmltag($value);
 		$css	= (strpos($value, ',') !== false ? 'rgb('.$value.')' : $value);
 		return '<span class="oblyon-color-swatch" style="background:'.dol_escape_htmltag($css).'"></span> <span class="opacitymedium">'.dol_escape_htmltag(strtoupper($value)).'</span>';
+	}
+	// User presets (personal colour presets of the "Colors" tab of the user card) ******************
+	/**
+	*	Directory of the personal presets of a user : DOL_DATA_ROOT/[entity/]oblyon/userpresets/<id> (created on the first write)
+	*
+	*	@param		int		$userid		User id
+	*	@return		string				Directory (may not exist yet)
+	**/
+	function oblyon_user_presets_dir($userid)
+	{
+		global $conf;
+		$root	= (!empty($conf->oblyon->dir_output) ? $conf->oblyon->dir_output : DOL_DATA_ROOT.'/oblyon');
+		return $root.'/userpresets/'.((int) $userid);
+	}
+	/**
+	*	Personal presets of a user (files of his directory), key => preset (oblyon_load_preset_file, source 'user')
+	*
+	*	@param		int		$userid		User id
+	*	@return		array
+	**/
+	function oblyon_get_user_presets($userid)
+	{
+		$dir	= oblyon_user_presets_dir($userid);
+		$out	= array();
+		if (! is_dir($dir))	return $out;
+		foreach (dol_dir_list($dir, 'files', 0, '\.json$', null, 'name', SORT_ASC, 0, 1) as $file) {
+			$preset	= oblyon_load_preset_file($file['fullname'], 'user');
+			if ($preset !== null)	$out[$preset['key']]	= $preset;
+		}
+		return $out;
+	}
+	/**
+	*	Presets offered on the Colors tab of a user : module presets with scope '' (the five shipped ones) then scope 'user' (accessibility),
+	*	then the personal presets of the user. Instance presets of the Colors tab of the module are not offered here.
+	*
+	*	@param		int		$userid		User id
+	*	@return		array				key => preset
+	**/
+	function oblyon_get_presets_for_user($userid)
+	{
+		$out	= array();
+		foreach (array('', 'user') as $scope) {
+			foreach (oblyon_get_presets() as $key => $preset) {
+				if ($preset['source'] == 'module' && $preset['scope'] === $scope)	$out[$key]	= $preset;
+			}
+		}
+		foreach (oblyon_get_user_presets($userid) as $key => $preset)	$out[$key]	= $preset;
+		return $out;
+	}
+	/**
+	*	Colours of a preset limited to the constants of the user tab (sections colors and dashboard, valid colour shapes only)
+	*
+	*	@param		array	$preset		Preset
+	*	@return		array				constant => colour
+	**/
+	function oblyon_preset_user_colors($preset)
+	{
+		$out	= array();
+		foreach (oblyon_user_colors_keys() as $key) {
+			foreach (array('colors', 'dashboard') as $section) {
+				if (isset($preset['sections'][$section][$key])) {
+					$value	= (string) $preset['sections'][$section][$key];
+					if (oblyon_color_is_valid($value, $key))	$out[$key]	= $value;
+					break;
+				}
+			}
+		}
+		return $out;
+	}
+	/**
+	*	Colours currently shown to a user on his tab : personal values when his personal colours are on and valid, else the instance values
+	*
+	*	@param		User	$object		User (conf loaded)
+	*	@return		array				constant => colour ('' possible)
+	**/
+	function oblyon_user_current_colors($object)
+	{
+		$enabled	= oblyon_user_colors_enabled($object);
+		$out		= array();
+		foreach (oblyon_user_colors_keys() as $key) {
+			$personal	= ($enabled && isset($object->conf->$key) ? (string) $object->conf->$key : '');
+			$out[$key]	= ($personal !== '' && oblyon_color_is_valid($personal, $key) ? $personal : getDolGlobalString($key));
+		}
+		return $out;
+	}
+	/**
+	*	Apply a preset to the personal colours of a user : full snapshot (preset colour when it has one, else the instance value),
+	*	flag OBLYON_USER_COLORS = 1, CSS revision bumped so the browser fetches the new stylesheet
+	*
+	*	@param		array	$preset		Preset
+	*	@param		User	$object		User
+	*	@return		int					1 = OK, -1 = KO
+	**/
+	function oblyon_apply_preset_to_user($preset, $object)
+	{
+		global $db, $conf;
+		$colors		= oblyon_preset_user_colors($preset);
+		$tabparam	= array();
+		foreach (oblyon_user_colors_keys() as $key)	$tabparam[$key]	= (isset($colors[$key]) ? $colors[$key] : getDolGlobalString($key));
+		$tabparam['OBLYON_USER_COLORS']	= 1;
+		$res	= dol_set_user_param($db, $conf, $object, $tabparam);	// 4 arguments : signature of Dolibarr 22 LTS
+		if ($res <= 0)	return -1;
+		dolibarr_set_const($db, 'MAIN_IHM_PARAMS_REV', getDolGlobalInt('MAIN_IHM_PARAMS_REV') + 1, 'chaine', 0, '', $conf->entity);
+		return 1;
+	}
+	/**
+	*	Save the colours currently shown to a user as one of his personal presets (sections colors + dashboard, colours only)
+	*
+	*	@param		User	$object			User
+	*	@param		string	$key			Preset key (validated here)
+	*	@param		string	$name			Displayed name
+	*	@param		string	$description	Description
+	*	@return		int						1 = OK, -1 = write error, -2 = invalid key, -3 = key of a module preset, -4 = already exists
+	**/
+	function oblyon_save_user_preset($object, $key, $name, $description = '')
+	{
+		if (! oblyon_preset_key_is_valid($key))	return -2;
+		$module	= oblyon_get_preset($key);
+		if ($module !== null && $module['source'] == 'module')	return -3;
+		$dir	= oblyon_user_presets_dir($object->id);
+		$file	= $dir.'/'.$key.'.json';
+		if (file_exists($file))	return -4;
+		$data	= array('name' => (string) $name, 'description' => (string) $description, 'author' => (string) $object->login, 'version' => '1', 'colors' => array(), 'dashboard' => array());
+		foreach (oblyon_user_current_colors($object) as $name_ => $value) {
+			if ($value === '')	continue;
+			$section	= oblyon_presets_section_of($name_);
+			if ($section == 'colors' || $section == 'dashboard')	$data[$section][$name_]	= $value;
+		}
+		ksort($data['colors']);
+		ksort($data['dashboard']);
+		if (! is_dir($dir) && dol_mkdir($dir) < 0)	return -1;
+		if (! is_writable($dir))	return -1;
+		$json	= json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+		if ($json === false || @file_put_contents($file.'.tmp', $json."\n") === false || ! @rename($file.'.tmp', $file)) {	// atomic write
+			@unlink($file.'.tmp');
+			return -1;
+		}
+		dolChmod($file);
+		return 1;
+	}
+	/**
+	*	Delete a personal preset of a user
+	*
+	*	@param		User	$object		User
+	*	@param		string	$key		Preset key
+	*	@return		int					1 = OK, -1 = KO, -2 = unknown
+	**/
+	function oblyon_delete_user_preset($object, $key)
+	{
+		if (! oblyon_preset_key_is_valid($key))	return -2;
+		$file	= oblyon_user_presets_dir($object->id).'/'.$key.'.json';
+		if (! file_exists($file))	return -2;
+		return (@unlink($file) ? 1 : -1);
+	}
+	/**
+	*	HTML of the preset cards of the user tab (module presets, accessibility preset, personal presets) and of the folded "save as preset" form
+	*
+	*	@param		User	$object		User of the card
+	*	@param		bool	$canedit	Buttons shown
+	*	@return		string				HTML
+	**/
+	function oblyon_print_user_preset_cards($object, $canedit)
+	{
+		global $langs, $db;
+		require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
+		$form	= new Form($db);
+		$self	= dol_escape_htmltag($_SERVER['PHP_SELF']);
+		$id		= (int) $object->id;
+		$out	= '<div class="oblyon-presets oblyon-user-presets"><div class="oblyon-presets__title">'.$langs->trans('OblyonUserPresets').'</div>';
+		$out	.= '<div class="opacitymedium small oblyon-presets__help">'.$langs->trans('OblyonUserPresetsHelp').'</div>';
+		$out	.= '<div class="oblyon-presets__grid">';
+		$mine	= 0;
+		foreach (oblyon_get_presets_for_user($id) as $key => $preset) {
+			$source		= ($preset['source'] == 'user' ? 'user' : 'module');
+			if ($source == 'user')	$mine++;
+			$contrast	= oblyon_check_preset_contrast(array('colors' => oblyon_preset_user_colors($preset)));
+			$out	.= '<form method="POST" action="'.$self.'" class="oblyon-preset">';
+			$out	.= '<input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="preset_key" value="'.dol_escape_htmltag($key).'"><input type="hidden" name="preset_source" value="'.$source.'">';
+			$out	.= oblyon_preset_card_preview($preset, $key, $source);
+			$tooltip	= ($preset['description'] !== '' ? oblyon_preset_text($preset['description']) : '');
+			$out	.= '<div class="oblyon-preset__head"><div class="oblyon-preset__name" title="'.dol_escape_htmltag($tooltip, 0, 1).'">'.oblyon_preset_text($preset['name'] !== '' ? $preset['name'] : $key);
+			if ($preset['scope'] === 'user')	$out	.= ' <span class="badge badge-status4 badge-status" title="'.dol_escape_htmltag($langs->trans('OblyonUserPresetAccessible')).'">'.$langs->trans('OblyonUserPresetAccessibleShort').'</span>';
+			if ($source == 'user')			$out	.= ' <span class="badge badge-status0 badge-status">'.$langs->trans('OblyonUserPresetsMineShort').'</span>';
+			$out	.= '</div><div class="oblyon-preset__icons">';
+			if ($contrast) {
+				$details	= array();
+				foreach ($contrast as $c)	$details[]	= oblyon_contrast_issue_text($c, 'oblyon_user_color_label');	// 3.7.0 : couples + valeurs invalides
+				$out	.= '<span class="oblyon-preset__icon oblyon-preset__icon--warn" title="'.dol_escape_htmltag($langs->trans('OblyonPresetContrastWarning', count($contrast))."\n".implode("\n", $details), 0, 1).'"><span class="fa fa-exclamation-triangle"></span></span>';
+			}
+			$out	.= '</div></div>';
+			$out	.= '<div class="oblyon-preset__actions">';
+			if ($canedit)	$out	.= '<button type="submit" name="action" value="apply_user_preset" class="butAction small oblyon-preset__apply">'.$langs->trans('OblyonUserPresetApply').'</button>';
+			if ($source == 'user') {
+				$out	.= '<div class="oblyon-preset__row-btn">';
+				$out	.= '<a class="butAction small" href="'.$self.'?id='.$id.'&action=download_user_preset&preset_key='.urlencode($key).'&token='.newToken().'" title="'.dol_escape_htmltag($langs->trans('OblyonPresetDownload')).'"><span class="fa fa-download"></span></a>';	// InfraS change : icone seule, le libelle Download debordait du bouton (l'infobulle title porte deja le libelle complet)
+				if ($canedit)	$out	.= '<button type="submit" name="action" value="delete_user_preset" class="butActionDelete small" onclick="return confirm(\''.dol_escape_js($langs->trans('OblyonPresetDeleteConfirm', $key)).'\');"><span class="fa fa-trash paddingright"></span>'.$langs->trans('OblyonPresetDelete').'</button>';
+				$out	.= '</div>';
+			}
+			$out	.= '</div></form>';
+		}
+		$out	.= '</div>';
+		if (! $mine)	$out	.= '<div class="opacitymedium small oblyon-presets__help">'.$langs->trans('OblyonUserPresetsEmpty').'</div>';
+		// Save the current colours as a personal preset (folded, like the forms of the module tab)
+		if ($canedit) {
+			$modulekeys	= array();
+			foreach (oblyon_get_presets() as $key => $preset)	if ($preset['source'] == 'module')	$modulekeys[]	= $key;
+			$out	.= '<div class="oblyon-presets oblyon-presets--forms"><details class="oblyon-presets__form"><summary class="oblyon-presets__title">'.$langs->trans('OblyonUserPresetSaveTitle').'</summary>';
+			$out	.= '<form method="POST" action="'.$self.'"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="action" value="save_user_preset">';
+			$out	.= '<div class="opacitymedium small">'.$langs->trans('OblyonUserPresetSaveHelp').'</div>';
+			$out	.= '<div class="oblyon-presets__fields">';
+			$out	.= '<label class="oblyon-presets__field"><span>'.$langs->trans('OblyonPresetKey').$form->textwithpicto('', $langs->trans('OblyonPresetKeyHelp', implode(', ', $modulekeys)), 1, 'help', '', 0, 2).'</span><input type="text" name="preset_key" class="flat" maxlength="40" pattern="[a-z0-9][a-z0-9_-]{1,39}" placeholder="mes-couleurs" required></label>';
+			$out	.= '<label class="oblyon-presets__field oblyon-presets__field--wide"><span>'.$langs->trans('OblyonPresetName').'</span><input type="text" name="preset_name" class="flat" maxlength="80" required></label>';
+			$out	.= '<label class="oblyon-presets__field oblyon-presets__field--full"><span>'.$langs->trans('OblyonPresetDesc').'</span><input type="text" name="preset_desc" class="flat" maxlength="255"></label></div>';
+			$out	.= '<button type="submit" class="butAction small">'.$langs->trans('OblyonPresetSaveAs').'</button></form></details></div>';
+		}
+		$out	.= '</div>';
+		return $out;
 	}

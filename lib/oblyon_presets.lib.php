@@ -36,6 +36,7 @@
 	require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
 	require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 	require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
+	dol_include_once('/oblyon/lib/oblyon_colors.lib.php');	// oblyon_color_to_hex() (3.7.0)
 
 	// Sections *************************************
 
@@ -215,9 +216,12 @@
 	**/
 	function oblyon_normalize_preset_data($data)
 	{
-		$out	= array('name' => '', 'description' => '', 'author' => '', 'version' => '1', 'sections' => array());
-		foreach (array('name', 'description', 'author', 'version') as $meta) {
+		$out	= array('name' => '', 'description' => '', 'author' => '', 'version' => '1', 'scope' => '', 'sections' => array()); // infras add: meta scope ('' = partout, 'user' = onglet utilisateur seulement)
+		foreach (array('name', 'description', 'author', 'version', 'scope') as $meta) {
 			if (isset($data[$meta]) && is_scalar($data[$meta]))	$out[$meta]	= trim((string) $data[$meta]);
+		}
+		if ($out['scope'] !== 'user') { // Infras add : seule valeur connue est 'user'
+			$out['scope']	= '';
 		}
 		foreach (oblyon_presets_sections() as $section => $def) {
 			if (! isset($data[$section]))	continue;
@@ -234,6 +238,7 @@
 				if (! preg_match('/^[A-Z0-9_]{3,80}$/', $name) || oblyon_presets_section_of($name) != $section || ! is_scalar($value))	continue;
 				$value	= trim((string) $value);
 				if (preg_match('/^#[0-9a-f]{3,8}$/i', $value))	$value	= strtoupper($value);	// hex colors in a single case
+				$value	= oblyon_color_to_hex($value);	// 3.7.0 : 'r,g,b' (accepted on input) stored as '#RRGGBB'
 				if (strlen($value) > 255 || ! oblyon_preset_value_is_valid($section, $name, $value))	continue;	// values are printed in the CSS and in the admin forms : typed validation
 				$values[$name]	= $value;
 			}
@@ -324,6 +329,7 @@
 			if ($section === '' || ! in_array($section, $sections))	continue;
 			$value	= (string) $obj->value;
 			if (preg_match('/^#[0-9a-f]{3,8}$/i', $value))	$value	= strtoupper($value);
+			$value	= oblyon_color_to_hex($value);	// 3.7.0 : a stored 'r,g,b' compares equal to the hex of the preset
 			$values[$section][$obj->name]	= $value;
 		}
 		return $values;
@@ -615,15 +621,18 @@
 	}
 
 	/**
-	*	Text / background couples of a preset whose contrast is below the threshold (WCAG AA = 4.5)
+	*	Text / background couples of a preset whose contrast is below the threshold (WCAG AA = 4.5), plus the colour values the theme cannot read
+	*	(3.7.0 : '#RRGGBB' expected, '#' alone tolerated for the menu texts, 'r,g,b' tolerated ; anything else, e.g. '0.0.0', falls back to grey in the theme)
 	*
 	*	@param		array	$preset		Preset (oblyon_get_preset) or plain array('colors' => array(...))
 	*	@param		float	$threshold	Minimum ratio
-	*	@return		array				array(array('text' => name, 'background' => name, 'ratio' => float), ...)
+	*	@return		array				array(array('text' => name, 'background' => name, 'ratio' => float), ...) ; an invalid value gives array('text' => name, 'background' => '', 'ratio' => 0, 'invalid' => value)
 	**/
 	function oblyon_check_preset_contrast($preset, $threshold = 4.5)
 	{
 		$colors	= isset($preset['sections']['colors']) ? $preset['sections']['colors'] : (isset($preset['colors']) ? $preset['colors'] : array());
+		$dashboard	= isset($preset['sections']['dashboard']) ? $preset['sections']['dashboard'] : (isset($preset['dashboard']) ? $preset['dashboard'] : array());	// 3.7.0 : tiles of the dashboard
+		$colors	= array_merge($dashboard, $colors);
 		$couples	= array(
 			// Couples as the theme really paints them : FLINE = cards / tabs / headings on BLINE, TEXT = rows and inputs, TEXTLINK = links on rows and cards
 			array('OBLYON_COLOR_FLINE', 'OBLYON_COLOR_BLINE'), array('OBLYON_COLOR_FLINE', 'THEME_ELDY_BACKTABCARD1'), array('OBLYON_COLOR_STITLE', 'OBLYON_COLOR_BCKGRD'),
@@ -634,14 +643,64 @@
 			array('THEME_ELDY_TEXTBTNACTION', 'THEME_ELDY_BTNACTION'), array('THEME_ELDY_TEXTTITLE', 'OBLYON_COLOR_BTITLE'), array('OBLYON_COLOR_FTOTAL', 'OBLYON_COLOR_BTOTAL'),
 			array('OBLYON_COLOR_INFO_TEXT', 'OBLYON_COLOR_INFO_BCKGRD'), array('OBLYON_COLOR_WARNING_TEXT', 'OBLYON_COLOR_WARNING_BCKGRD'), array('OBLYON_COLOR_ERROR_TEXT', 'OBLYON_COLOR_ERROR_BCKGRD'),
 			array('OBLYON_COLOR_AUTOCOMPLETE_TEXT', 'OBLYON_COLOR_AUTOCOMPLETE_BCKGRD'), array('OBLYON_COLOR_CHIP_TEXT', 'OBLYON_COLOR_CHIP_BCKGRD'), array('OBLYON_COLOR_RESULT_TEXT', 'OBLYON_COLOR_RESULT_BCKGRD'),
+			// 3.7.0 : MAIN = file type icons on the cards and hover text of the tabs (graphic use : own threshold 3, third element), background of the agenda events ; amounts on the rows ; hovered / checked rows ;
+			// notifications ; natures and members ; selected menu entry ; floating surfaces, week-ends and days off under the row text ; page title on the page ; date picker active day on the core top menu colour ; jQuery UI dialogs on BACKBODY
+			array('OBLYON_COLOR_MAIN', 'THEME_ELDY_BACKTABCARD1', 3),
+			array('OBLYON_COLOR_CAL_EVENT_TXT', 'OBLYON_COLOR_MAIN'), array('OBLYON_COLOR_AMOUNT_TEXT', 'OBLYON_COLOR_BLINE'), array('OBLYON_COLOR_AMOUNT_REMAIN', 'OBLYON_COLOR_BLINE'),
+			array('OBLYON_COLOR_AMOUNT_PAID', 'OBLYON_COLOR_BLINE'), array('OBLYON_COLOR_AMOUNT_UNPAID', 'OBLYON_COLOR_BLINE'), array('OBLYON_COLOR_FLINE_HOVER', 'THEME_ELDY_USE_HOVER'), array('OBLYON_COLOR_FLINE_HOVER', 'THEME_ELDY_USE_CHECKED'),
+			array('OBLYON_COLOR_NOTIF_INFO_TEXT', 'OBLYON_COLOR_NOTIF_INFO_BCKGRD'), array('OBLYON_COLOR_NOTIF_WARNING_TEXT', 'OBLYON_COLOR_NOTIF_WARNING_BCKGRD'), array('OBLYON_COLOR_NOTIF_ERROR_TEXT', 'OBLYON_COLOR_NOTIF_ERROR_BCKGRD'),
+			array('THEME_ELDY_COLORNATURE', 'THEME_ELDY_PROSPECTBACK'), array('THEME_ELDY_COLORNATURE', 'THEME_ELDY_CUSTOMERBACK'), array('THEME_ELDY_COLORNATURE', 'THEME_ELDY_VENDORBACK'), array('THEME_ELDY_COLORNATURE', 'THEME_ELDY_USERBACK'),
+			array('THEME_ELDY_COLORMEMBER', 'THEME_ELDY_MEMBER_COMPANYBACK'), array('THEME_ELDY_COLORMEMBER', 'THEME_ELDY_MEMBER_INDIVIDUALBACK'), array('OBLYON_COLOR_TOPMENU_TXT_SEL', 'OBLYON_COLOR_TOPMENU_BCKGRD_SEL'),
+			array('THEME_ELDY_TEXT', 'OBLYON_COLOR_OVERLAY_BCKGRD'), array('THEME_ELDY_TEXT', 'OBLYON_COLOR_CAL_WEEKEND_BCKGRD'), array('THEME_ELDY_TEXT', 'OBLYON_COLOR_CAL_HOLIDAY_BCKGRD'), array('THEME_ELDY_TEXT', 'THEME_ELDY_BACKBODY'),
+			array('THEME_ELDY_TEXTTITLENOTAB', 'OBLYON_COLOR_BCKGRD'), array('OBLYON_COLOR_FDATE_SELECTED', 'THEME_ELDY_TOPMENU_BACK1'),
+			// 3.7.0 : stock, secondary pictograms and timeline (the badge text is computed by contrast, nothing to check)
+			array('OBLYON_COLOR_STOCK_OK', 'OBLYON_COLOR_BLINE'), array('OBLYON_COLOR_STOCK_LOW', 'OBLYON_COLOR_BLINE'), array('OBLYON_COLOR_STOCK_EXIT', 'OBLYON_COLOR_BLINE'), array('OBLYON_COLOR_ICON_TEXT', 'OBLYON_COLOR_BLINE'),
+			array('THEME_ELDY_TEXT', 'OBLYON_COLOR_TIMELINE_BCKGRD'), array('THEME_ELDY_TEXT', 'OBLYON_COLOR_TIMELINE_PRIVATE_BCKGRD'),
 		);
+		// 3.7.0 : dashboard tiles : the module colour is the icon colour on the row background (OBLYON_COLOR_BLINE, info-box.inc.php), or the icon background under a white icon when THEME_INFOBOX_COLOR_ON_BACKGROUND is on ;
+		// WEATHER_COLOR is a background under an image, not checked. A name starting with '#' is a literal colour
+		$tiles	= array('ACTION', 'PROJECT', 'CUSTOMER_PROPAL', 'CUSTOMER_ORDER', 'CUSTOMER_INVOICE', 'SUPPLIER_PROPAL', 'SUPPLIER_ORDER', 'SUPPLIER_INVOICE', 'CONTRAT', 'BANK', 'ADHERENT', 'EXPENSEREPORT', 'HOLIDAY', 'TICKET', 'MRP');
+		$onbackground	= (isset($colors['THEME_INFOBOX_COLOR_ON_BACKGROUND']) ? (string) $colors['THEME_INFOBOX_COLOR_ON_BACKGROUND'] : getDolGlobalString('THEME_INFOBOX_COLOR_ON_BACKGROUND', '0'));
+		foreach ($tiles as $tile) {
+			$couples[]	= ($onbackground == '1' ? array('#FFFFFF', 'OBLYON_INFOXBOX_'.$tile.'_COLOR') : array('OBLYON_INFOXBOX_'.$tile.'_COLOR', 'OBLYON_COLOR_BLINE'));
+		}
 		$low	= array();
+		// Values the theme cannot read (3.7.0) : reported first, and skipped by the couples below (oblyon_contrast_ratio() returns null for them)
+		$rgbnames	= array('THEME_ELDY_TOPMENU_BACK1', 'THEME_ELDY_VERMENU_BACK1', 'THEME_ELDY_TOPBORDER_TITLE1', 'THEME_ELDY_BACKTITLE1', 'THEME_ELDY_BACKTABCARD1', 'THEME_ELDY_BACKTABACTIVE',
+						'THEME_ELDY_LINEIMPAIR1', 'THEME_ELDY_LINEIMPAIR2', 'THEME_ELDY_LINEPAIR1', 'THEME_ELDY_LINEPAIR2', 'THEME_ELDY_LINEBREAK', 'THEME_ELDY_BACKBODY', 'THEME_ELDY_TEXTTITLENOTAB',
+						'THEME_ELDY_TEXTTITLE', 'THEME_ELDY_TEXTTITLELINK', 'THEME_ELDY_TEXT', 'THEME_ELDY_TEXTLINK', 'THEME_ELDY_USE_HOVER', 'THEME_ELDY_USE_CHECKED', 'OBLYON_COLOR_LOGIN_BCKGRD');	// same list as oblyon_colors_rgb_allowed()
+		foreach ($colors as $name => $value) {
+			if (! preg_match('/^(OBLYON_COLOR_|THEME_ELDY_(.*BACK|.*TEXT|BTNACTION|TEXTBTNACTION|USE_HOVER|USE_CHECKED|LINE|COLOR|MEMBER|TOPBORDER))/', $name))	continue;	// colour constants only (same test as the import)
+			$value	= (string) $value;
+			if (preg_match('/^#([0-9a-f]{6})?$/i', $value))	continue;
+			if (in_array($name, $rgbnames) && preg_match('/^(\d{1,3}),(\d{1,3}),(\d{1,3})$/', $value, $reg) && (int) $reg[1] <= 255 && (int) $reg[2] <= 255 && (int) $reg[3] <= 255)	continue;
+			$low[]	= array('text' => $name, 'background' => '', 'ratio' => 0, 'invalid' => $value);
+		}
 		foreach ($couples as $couple) {
-			if (! isset($colors[$couple[0]]) || ! isset($colors[$couple[1]]))	continue;
-			$ratio	= oblyon_contrast_ratio($colors[$couple[0]], $colors[$couple[1]]);
-			if ($ratio !== null && $ratio < $threshold)	$low[]	= array('text' => $couple[0], 'background' => $couple[1], 'ratio' => round($ratio, 2));
+			$text	= (substr($couple[0], 0, 1) == '#' ? $couple[0] : (isset($colors[$couple[0]]) ? $colors[$couple[0]] : null));	// 3.7.0 : literal colour allowed
+			$back	= (substr($couple[1], 0, 1) == '#' ? $couple[1] : (isset($colors[$couple[1]]) ? $colors[$couple[1]] : null));
+			if ($text === null || $back === null)	continue;
+			$ratio	= oblyon_contrast_ratio($text, $back);
+			$min	= (isset($couple[2]) ? $couple[2] : $threshold);	// 3.7.0 : threshold of the couple (graphic elements : 3)
+			if ($ratio !== null && $ratio < $min)	$low[]	= array('text' => $couple[0], 'background' => $couple[1], 'ratio' => round($ratio, 2));
 		}
 		return $low;
+	}
+
+	/**
+	*	One line of the contrast report (3.7.0) : "text / background : ratio" for a couple, "name : invalid value" for a value the theme cannot read
+	*
+	*	@param		array		$issue		One entry of oblyon_check_preset_contrast()
+	*	@param		callable	$labelfn	Function giving the label of a constant name (default : $langs->trans)
+	*	@return		string					Text (not escaped)
+	**/
+	function oblyon_contrast_issue_text($issue, $labelfn = null)
+	{
+		global $langs;
+
+		if ($labelfn === null)	$labelfn	= array($langs, 'trans');
+		if (isset($issue['invalid']))	return $langs->trans('OblyonPresetInvalidValue', call_user_func($labelfn, $issue['text']), $issue['invalid']);
+		return call_user_func($labelfn, $issue['text']).' / '.call_user_func($labelfn, $issue['background']).' : '.$issue['ratio'];
 	}
 
 	// Display **************************************
@@ -691,6 +750,31 @@
 	}
 
 	/**
+	 *	Preview block of preset card: screenshot img/oblyon<key>.png of the module when it exists (the five shipped presets), else a drawing from the colors.
+	 *
+	 *	@param 			array	$preset		Preset (oblyon_get_perset)
+	 *	@param			string	$key		Preset key
+	 *	@param			string	$source		Source of the preset ('module' or 'instance' or 'user')
+	 *	@return			string				HTML of the preview block
+	 **/
+	function oblyon_preset_card_preview($preset, $key, $source) {
+		global $langs;
+		$shot		= ($source == 'module' && file_exists(dol_buildpath('/oblyon/img/oblyon'.$key.'.png', 0)));
+		$out	= '<div class="oblyon-preset__preview'.($shot ? ' oblyon-preset__preview--img' : '').'" style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_BCKGRD').'" title="'.($shot ? dol_escape_htmltag(oblyon_preset_text($preset['name'] !== '' ? $preset['name'] : $key)) : $langs->trans('OblyonPresetPreview')).'">';
+		if ($shot) {
+			$out	.= '<img src="'.dol_buildpath('/oblyon/img/oblyon'.$key.'.png', 1).'" alt="">';
+		} else {
+			$out	.= '<div class="oblyon-preset__top" style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_TOPMENU_BCKGRD').'"><i style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_MAIN').'"></i></div>';
+			$out	.= '<div class="oblyon-preset__left" style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_LEFTMENU_BCKGRD').'"></div>';
+			$out	.= '<div class="oblyon-preset__page"><div class="oblyon-preset__band" style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_BTITLE').'"><i style="background:'.oblyon_preset_color($preset, 'THEME_ELDY_TEXTTITLE').'"></i></div>';
+			$out	.= '<div class="oblyon-preset__row" style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_BLINE').'"><i style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_FLINE').'"></i></div>';
+			$out	.= '<div class="oblyon-preset__row" style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_BLINE').'"><i style="background:'.oblyon_preset_color($preset, 'THEME_ELDY_TEXTLINK').'"></i></div>';
+			$out	.= '<div class="oblyon-preset__btn" style="background:'.oblyon_preset_color($preset, 'THEME_ELDY_BTNACTION').'"></div></div>';
+		}
+		$out	.= '</div>';
+		return $out;
+	}
+	/**
 	*	HTML of the preset cards (module presets, then instance presets) with their action buttons (POST forms).
 	*	A preset is applied, updated and saved as a whole : the section choice only exists in the library (CLI, other callers).
 	*
@@ -707,7 +791,11 @@
 		$out		= '';
 		foreach (array('module' => 'OblyonPresetsModule', 'instance' => 'OblyonPresetsInstance') as $source => $titlekey) {
 			$group	= array();
-			foreach ($presets as $key => $preset)	if ($preset['source'] == $source)	$group[$key]	= $preset;
+			foreach ($presets as $key => $preset)	{
+				if ($preset['source'] == $source && $preset['scope'] !== 'user') {
+					$group[$key]	= $preset;
+				}
+			}
 			if (! count($group) && $source == 'module')	continue;
 			$out	.= '<div class="oblyon-presets"><div class="oblyon-presets__title">'.$langs->trans($titlekey).($source == 'instance' ? ' <span class="opacitymedium small">('.dol_escape_htmltag(oblyon_presets_dirs()['instance']).')</span>' : '').'</div>';
 			$out	.= '<div class="opacitymedium small oblyon-presets__help">'.$langs->trans(count($group) ? 'OblyonPresetsHelp' : 'OblyonPresetsInstanceEmpty').'</div>';
@@ -718,19 +806,7 @@
 				$contrast	= oblyon_check_preset_contrast($preset);
 				$out	.= '<form method="POST" action="'.$self.'" class="oblyon-preset'.($iscurrent ? ' is-current' : '').($modified ? ' is-modified' : '').'">';
 				$out	.= '<input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="preset_key" value="'.dol_escape_htmltag($key).'">';
-				// Preview : screenshot img/oblyon<key>.png of the module when it exists (the five shipped presets), else a drawing from the colors
-				$shot	= ($source == 'module' && file_exists(dol_buildpath('/oblyon/img/oblyon'.$key.'.png', 0)));
-				$out	.= '<div class="oblyon-preset__preview'.($shot ? ' oblyon-preset__preview--img' : '').'" style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_BCKGRD').'" title="'.($shot ? dol_escape_htmltag(oblyon_preset_text($preset['name'] !== '' ? $preset['name'] : $key)) : $langs->trans('OblyonPresetPreview')).'">';
-				if ($shot)	$out	.= '<img src="'.dol_buildpath('/oblyon/img/oblyon'.$key.'.png', 1).'" alt="">';
-				else {
-				$out	.= '<div class="oblyon-preset__top" style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_TOPMENU_BCKGRD').'"><i style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_MAIN').'"></i></div>';
-				$out	.= '<div class="oblyon-preset__left" style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_LEFTMENU_BCKGRD').'"></div>';
-				$out	.= '<div class="oblyon-preset__page"><div class="oblyon-preset__band" style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_BTITLE').'"><i style="background:'.oblyon_preset_color($preset, 'THEME_ELDY_TEXTTITLE').'"></i></div>';
-				$out	.= '<div class="oblyon-preset__row" style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_BLINE').'"><i style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_FLINE').'"></i></div>';
-				$out	.= '<div class="oblyon-preset__row" style="background:'.oblyon_preset_color($preset, 'OBLYON_COLOR_BLINE').'"><i style="background:'.oblyon_preset_color($preset, 'THEME_ELDY_TEXTLINK').'"></i></div>';
-				$out	.= '<div class="oblyon-preset__btn" style="background:'.oblyon_preset_color($preset, 'THEME_ELDY_BTNACTION').'"></div></div>';
-				}
-				$out	.= '</div>';
+				$out	.= oblyon_preset_card_preview($preset, $key, $source);	// InfraS change : apercu partage avec l'onglet utilisateur
 				// Head : name (description as tooltip) + badges, then small icons (contrast warning, download, update, delete)
 				$sections	= implode(', ', array_map('oblyon_presets_section_label', array_keys($preset['sections'])));
 				$tooltip	= ($preset['description'] !== '' ? oblyon_preset_text($preset['description'])."\n" : '').$langs->trans('OblyonPresetSections').' : '.$sections;
@@ -740,7 +816,7 @@
 				$out	.= '</div>';
 				if ($contrast) {
 					$details	= array();
-					foreach ($contrast as $c)	$details[]	= $langs->trans($c['text']).' / '.$langs->trans($c['background']).' : '.$c['ratio'];
+					foreach ($contrast as $c)	$details[]	= oblyon_contrast_issue_text($c);	// 3.7.0 : couples + valeurs invalides
 					$out	.= '<span class="oblyon-preset__icon oblyon-preset__icon--warn" title="'.dol_escape_htmltag($langs->trans('OblyonPresetContrastWarning', count($contrast))."\n".implode("\n", $details), 0, 1).'"><span class="fa fa-exclamation-triangle"></span></span>';
 				}
 				$out	.= '</div>';
@@ -749,7 +825,7 @@
 				$out	.= '<button type="submit" name="action" value="apply_preset" class="butAction small oblyon-preset__apply">'.$langs->trans($modified ? 'OblyonPresetRevert' : 'OblyonPresetApply').'</button>';
 				if ($preset['source'] == 'instance' && $modified)	$out	.= '<button type="submit" name="action" value="save_preset" class="butAction small oblyon-preset__apply">'.$langs->trans('OblyonPresetSave').'</button>';
 				$out	.= '<div class="oblyon-preset__row-btn">';
-				$out	.= '<a class="butAction small" href="'.$self.'?action=download_preset&preset_key='.urlencode($key).'&token='.newToken().'" title="'.dol_escape_htmltag($langs->trans('OblyonPresetDownload')).'"><span class="fa fa-download paddingright"></span>'.$langs->trans('Download').'</a>';
+				$out	.= '<a class="butAction small" href="'.$self.'?action=download_preset&preset_key='.urlencode($key).'&token='.newToken().'" title="'.dol_escape_htmltag($langs->trans('OblyonPresetDownload')).'"><span class="fa fa-download"></span></a>';	// InfraS change : icone seule, le libelle Download debordait du bouton (l'infobulle title porte deja le libelle complet)
 				if ($preset['source'] == 'instance')	$out	.= '<button type="submit" name="action" value="delete_preset" class="butActionDelete small" title="'.dol_escape_htmltag($langs->trans('OblyonPresetDelete')).'" onclick="return confirm(\''.dol_escape_js($langs->trans('OblyonPresetDeleteConfirm', $key)).'\');"><span class="fa fa-trash paddingright"></span>'.$langs->trans('OblyonPresetDelete').'</button>';
 				$out	.= '</div></div></form>';
 			}
