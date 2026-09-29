@@ -850,17 +850,14 @@ div.tabBar {
 	border-radius: var(--oblyon-radius);
 	color: var(--colorfline);
 	margin-bottom: 14px;
-<<<<<<< Updated upstream
 	padding-top: 12px;
 	padding-left: <?php print ($dol_optimize_smallscreen?'6':'14'); ?>px;
 	padding-right: <?php print ($dol_optimize_smallscreen?'6':'14'); ?>px;
 	padding-bottom: 12px;
-=======
-	padding-top: var(--oblyon-card-py);	/* InfraS change : densite (3.8.0) */
+	padding-top: var(--oblyon-card-py);	/* densite (3.8.0) */
 	padding-left: <?php print ($dol_optimize_smallscreen?'6':'14'); ?>px;
 	padding-right: <?php print ($dol_optimize_smallscreen?'6':'14'); ?>px;
-	padding-bottom: var(--oblyon-card-py);	/* InfraS change : densite (3.8.0) */
->>>>>>> Stashed changes
+	padding-bottom: var(--oblyon-card-py);	/* densite (3.8.0) */
 	width: auto;
 }
 /* InfraS change end */
@@ -1018,10 +1015,8 @@ a.tab:link, a.tab:visited, a.tab:hover, a.tab#active {
 	border-radius: var(--oblyon-radius) var(--oblyon-radius) 0 0;
 	height: 38px;
 }
-<<<<<<< Updated upstream
-=======
 <?php if ($oblyon_tabs_style == 'underline') { ?>
-/* InfraS add begin : style des onglets "soulignes" (OBLYON_TABS_STYLE = underline, 3.8.0) : bande neutre a coins superieurs arrondis, fermee par un filet ;
+/* style des onglets "soulignes" (OBLYON_TABS_STYLE = underline, 3.8.0) : bande neutre a coins superieurs arrondis, fermee par un filet ;
    onglets inactifs en texte attenue, survol en texte des lignes sur fond des lignes, actif en couleur principale sur fond des lignes avec un soulignement de 3 px
    qui recouvre le filet. Le core enveloppe chaque lien dans div.tab.tabactive / div.tab.tabunactive : le soulignement est porte par cette boite seulement (le lien n'en a pas).
    La rangee devient une boite flexible : sa hauteur est reelle (height: 100% d'origine ne calcule rien) et sa marge basse ecarte la carte */
@@ -1085,9 +1080,8 @@ a.tab:hover, a.tab:focus, div.tabsElem:hover, div.tabsElem a.tab:hover {
 div.tabactive a.tab:hover, a.tab#active:hover {
 	color: var(--oblyon-tab-under-txt) !important;
 }
-/* InfraS add end */
 <?php } elseif ($oblyon_tabs_style == 'pills') { ?>
-/* InfraS add begin : style des onglets "pilules" (OBLYON_TABS_STYLE = pills, 3.8.0) : pilules arrondies, l'active sur un fond teinte de la couleur principale.
+/*  style des onglets "pilules" (OBLYON_TABS_STYLE = pills, 3.8.0) : pilules arrondies, l'active sur un fond teinte de la couleur principale.
    Rangee en boite flexible (hauteur reelle, voir le style "soulignes") avec un espace de 6 px entre pilules et 12 px avant la carte */
 div.tabs {
 	display: flex;
@@ -1150,9 +1144,7 @@ div.tabs > div.tabsElem > div.tab:hover {
 	box-shadow: var(--oblyon-shadow-md);
 }
 <?php } ?>
-/* InfraS add end */
 <?php } ?>
->>>>>>> Stashed changes
 a.tabimage {
 	color: var(--colorfline);
 	font-family: var(--fontfamilydol);

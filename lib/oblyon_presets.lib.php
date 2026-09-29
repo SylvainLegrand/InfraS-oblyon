@@ -61,25 +61,25 @@
 				'names'		=> array('THEME_FONT_FAMILY', 'THEME_ELDY_FONT_SIZE1', 'THEME_ELDY_BORDER_RADIUS', 'THEME_SHOW_BORDER_ON_INPUT', 'THEME_ADD_BACKGROUND_ON_INPUT',
 									'THEME_ELDY_USEBORDERONTABLE', 'THEME_ELDY_SHADOW_ON_SMALL_BOXES', 'THEME_ELDY_TOTAL_BACKGROUND_LIKE_HEAD',
 									'THEME_ELDY_USEBOLDTITLE', 'OBLYON_IMAGE_HEIGHT_TABLE', 'OBLYON_DENSITY', 'OBLYON_TABS_STYLE', 'OBLYON_TAB_PILL_BORDER', 'OBLYON_TAB_PILL_SHADOW',
-									'OBLYON_BUTTON_STYLE', 'OBLYON_BUTTON_FORM_OWN_COLORS', 'OBLYON_BADGE_STYLE', 'OBLYON_STATUS_PULSE', 'OBLYON_AGENDA_STYLE'),	// InfraS change : options d'interface 3.8.0 (densite, style des onglets, bordure / ombre des pilules, style des boutons, agenda)
+									'OBLYON_BUTTON_STYLE', 'OBLYON_BUTTON_FORM_OWN_COLORS', 'OBLYON_BADGE_STYLE', 'OBLYON_STATUS_PULSE', 'OBLYON_AGENDA_STYLE'),	// options d'interface 3.8.0 (densite, style des onglets, bordure / ombre des pilules, style des boutons, agenda)
 				'patterns'	=> array(),
 				'scalar'	=> false),
 			'menus'			=> array(
 				'names'		=> array('MAIN_MENU_INVERT', 'OBLYON_FULLSIZE_TOPBAR', 'MAIN_SHOW_LOGO', 'THEME_STICKY_TOPMENU', 'OBLYON_HIDE_TOPICONS', 'THEME_MENU_COLORLOGO',
 									'OBLYON_SHOW_COMPNAME', 'OBLYON_STICKY_LEFTBAR', 'OBLYON_HIDE_LEFTMENU', 'OBLYON_EFFECT_LEFTMENU', 'OBLYON_HIDE_LEFTICONS',
 									'OBLYON_REDUCE_LEFTMENU', 'OBLYON_EFFECT_REDUCE_LEFTMENU', 'OBLYON_TOUCH_MENU', 'OBLYON_MOBILE_LAYOUT', 'OBLYON_LOGO_PADDING', 'OBLYON_LOGO_SIZE',
-									'OBLYON_USER_BLOCK'),	// InfraS change : bloc utilisateur (3.8.0)
+									'OBLYON_USER_BLOCK'),	// bloc utilisateur (3.8.0)
 				'patterns'	=> array(),
 				'scalar'	=> false),
 			'general'		=> array(
 				'names'		=> array('OBLYON_DISABLE_VERSION', 'MAIN_STATUS_USES_IMAGES', 'MAIN_USE_TOP_MENU_QUICKADD_DROPDOWN', 'MAIN_USE_TOP_MENU_SEARCH_DROPDOWN',
-									'MAIN_USE_TOP_MENU_BOOKMARK_DROPDOWN', 'OBLYON_PADDING_RIGHT_BOTTOM', 'MAIN_LOGIN_RIGHT', 'OBLYON_MOTION', 'OBLYON_NOTIFICATION_CENTER'),	// InfraS change : animations (3.8.0)
+									'MAIN_USE_TOP_MENU_BOOKMARK_DROPDOWN', 'OBLYON_PADDING_RIGHT_BOTTOM', 'MAIN_LOGIN_RIGHT', 'OBLYON_MOTION', 'OBLYON_NOTIFICATION_CENTER'),	// animations (3.8.0)
 				'patterns'	=> array(),
 				'scalar'	=> false),
 			'lists_cards'	=> array(
 				'names'		=> array('MAIN_CHECKBOX_LEFT_COLUMN', 'FIX_TITLE_IN_LIST', 'DISABLE_KANBAN_VIEW_IN_LIST', 'FIX_STICKY_HEADER_CARD', 'FIX_STICKY_COLUMN_FIRST',
 									'FIX_STICKY_COLUMN_LAST', 'FIX_STICKY_TOTAL_BAR', 'MAIN_GRANDTOTAL_LIST_SHOW', 'FIX_STICKY_GRANDTOTAL_BAR', 'FIX_STICKY_TABS_CARD',
-									'FIX_AREAREF_CARD', 'MAIN_MAXTABS_IN_CARD', 'FIX_ABSOLUTE_BUTTONS_ACTION_CARD', 'MAIN_VIEW_LINE_NUMBER', 'OBLYON_LIST_HEADER_STYLE'),	// InfraS change : style des en-tetes de liste (3.8.0)
+									'FIX_AREAREF_CARD', 'MAIN_MAXTABS_IN_CARD', 'FIX_ABSOLUTE_BUTTONS_ACTION_CARD', 'MAIN_VIEW_LINE_NUMBER', 'OBLYON_LIST_HEADER_STYLE'),	// style des en-tetes de liste (3.8.0)
 				'patterns'	=> array(),
 				'scalar'	=> false),
 			'dashboard'		=> array(
@@ -590,7 +590,6 @@
 	// too heavy for its use ; oblyon_text_on() of lib/oblyon_colors.lib.php has its own luminance computation and stays)
 
 
-<<<<<<< Updated upstream
 	/**
 	*	Contrast ratio between two colors (WCAG 2), 1 to 21
 	*
@@ -672,8 +671,6 @@
 		}
 		return $low;
 	}
-=======
->>>>>>> Stashed changes
 
 	/**
 	*	One line of the contrast report (3.7.0) : "text / background : ratio" for a couple, "name : invalid value" for a value the theme cannot read
@@ -801,14 +798,11 @@
 				if ($iscurrent)	$out	.= ' <span class="badge badge-status4 badge-status" title="'.dol_escape_htmltag($langs->trans('OblyonPresetCurrent')).'">'.$langs->trans('OblyonPresetCurrent').'</span>';
 				if ($modified)	$out	.= ' <span class="badge badge-status1 badge-status" title="'.dol_escape_htmltag($langs->trans('OblyonPresetModifiedHelp', implode(', ', array_map('oblyon_presets_section_label', $modified)))).'">'.$langs->trans('OblyonPresetModified').'</span>';
 				$out	.= '</div>';
-<<<<<<< Updated upstream
 				if ($contrast) {
 					$details	= array();
 					foreach ($contrast as $c)	$details[]	= oblyon_contrast_issue_text($c);	// 3.7.0 : couples + valeurs invalides
 					$out	.= '<span class="oblyon-preset__icon oblyon-preset__icon--warn" title="'.dol_escape_htmltag($langs->trans('OblyonPresetContrastWarning', count($contrast))."\n".implode("\n", $details), 0, 1).'"><span class="fa fa-exclamation-triangle"></span></span>';
 				}
-=======
->>>>>>> Stashed changes
 				$out	.= '</div>';
 				// Actions : a preset is always applied / updated as a whole (no section choice) ; stacked full-width buttons
 				$out	.= '<div class="oblyon-preset__actions">';

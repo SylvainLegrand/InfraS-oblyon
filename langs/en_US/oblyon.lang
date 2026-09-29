@@ -116,13 +116,10 @@ OBLYON_COLOR_LOGIN_BCKGRD            = Login background color
 OBLYON_COLOR_BTITLE                  = Title background color
 OBLYON_COLOR_FTITLE                  = Text color of the titles
 OBLYON_COLOR_STITLE                  = Text color of the Main titles
-<<<<<<< Updated upstream
-=======
 OBLYON_COLOR_LISTHEAD_FLAT_BCKGRD    = Flat list headers: background (empty = row background)
 OBLYON_COLOR_LISTHEAD_FLAT_TXT       = Flat list headers: text (empty = muted row text)
 OBLYON_COLOR_LISTHEAD_FLAT_LINE      = Flat list headers: rule (empty = neutral frame)
 OBLYON_COLOR_LISTHEAD_FLAT_SEL       = Flat list headers: sorted column and hover (empty = main colour)
->>>>>>> Stashed changes
 OBLYON_COLOR_BLINE                   = Lines background color
 OBLYON_COLOR_BLINE_HOVER             = Background color of the hovered lines
 OBLYON_COLOR_FDATE_DEFAULT           = Default date color (today's date) in date picker
@@ -164,11 +161,9 @@ OBLYON_COLOR_LEFTMENU_TXT_HOVER      = Left menu hover text color
 OBLYON_COLOR_LEFTMENU_BCKGRD_SEL     = Background color of the selected entry of the left menu
 OBLYON_COLOR_LEFTMENU_TXT_SEL        = Text color of the selected entry of the left menu
 OBLYON_COLOR_BUTTON_ACTION1          = Button background color 1
-<<<<<<< Updated upstream
 OBLYON_COLOR_BUTTON_ACTION2          = Button background color 2
 OBLYON_COLOR_BUTTON_DELETE1          = Color 1 of the background of the dangerous buttons
 OBLYON_COLOR_BUTTON_DELETE2          = Color 2 background of the dangerous buttons
-=======
 OBLYON_COLOR_BUTTON_ACTION2          = Action buttons: hover background
 OBLYON_COLOR_BUTTON_BORDER           = Action buttons: border
 OBLYON_COLOR_BUTTON_TXT_HOVER        = Action buttons: hover text
@@ -197,7 +192,6 @@ OBLYON_COLOR_BUTTON_FORM_FLAT_TXT    = Form buttons : text (Outline / Soft)
 OBLYON_COLOR_BUTTON_FORM_FLAT_BORDER = Form buttons : border (Outline / Soft)
 OBLYON_COLOR_BUTTON_FORM_FLAT_BCKGRD_HOVER= Form buttons : hover background (Outline / Soft)
 OBLYON_COLOR_BUTTON_FORM_FLAT_TXT_HOVER= Form buttons : hover text (Outline / Soft)
->>>>>>> Stashed changes
 OBLYON_COLOR_INFO_BORDER             = Color border on information message
 OBLYON_COLOR_INFO_BCKGRD             = Color background on information message
 OBLYON_COLOR_INFO_TEXT               = Color text on information message
@@ -214,15 +208,12 @@ OBLYON_COLOR_NOTIF_WARNING_TEXT      = Color text on notification warning messag
 OBLYON_COLOR_NOTIF_ERROR_BCKGRD      = Color background on notification error message
 OBLYON_COLOR_NOTIF_ERROR_TEXT        = Color text on notification error message
 OBLYON_COLOR_TEXTTABACTIVE           = Color text of active tabs
-<<<<<<< Updated upstream
-=======
 OBLYON_COLOR_TAB_PILL_BCKGRD         = Background colour of the active tab (pills; empty = tint of the main colour)
 OBLYON_COLOR_TAB_PILL_TXT            = Text colour of the active tab (pills; empty = main colour)
 OBLYON_COLOR_TAB_PILL_BORDER         = Border colour of the tabs (pills, with the Border option; empty = neutral frame)
 OBLYON_COLOR_TAB_UNDER_BAND          = Background colour of the tab band (underlined; empty = neutral background)
 OBLYON_COLOR_TAB_UNDER_TXT           = Text colour of the active tab (underlined; empty = main colour)
 OBLYON_COLOR_TAB_UNDER_LINE          = Colour of the underline (underlined; empty = main colour)
->>>>>>> Stashed changes
 OBLYON_COLOR_INPUT_BCKGRD            = Background color of inputs
 OBLYON_COLOR_INPUT_ADD_BCKGRD        = Input fields background color (when 'Grey background on inputs' is on)
 OBLYON_COLOR_BOX_SHADOW              = Small boxes shadow color (when 'Drop shadow on boxes' is on)
@@ -246,13 +237,10 @@ OBLYON_COLOR_WEATHER_LEVEL2          = Weather level 2 color
 OBLYON_COLOR_WEATHER_LEVEL3          = Weather level 3 color
 OBLYON_COLOR_WEATHER_LEVEL4          = Weather level 4 color
 OBLYON_COLOR_INFOBOX_UPDATE          = 'Update available' badge color
-<<<<<<< Updated upstream
 THEME_ELDY_BTNACTION                 = Action buttons background color (Eldy theme)
 THEME_ELDY_TEXTBTNACTION             = Action buttons text color (Eldy theme)
-=======
 THEME_ELDY_BTNACTION                 = Action buttons: background (Eldy theme)
 THEME_ELDY_TEXTBTNACTION             = Action buttons: text (Eldy theme)
->>>>>>> Stashed changes
 THEME_ELDY_USE_HOVER                 = Hovered rows background color (Eldy theme)
 THEME_ELDY_USE_CHECKED               = Checked rows background color (Eldy theme)
 InvertRatioDesc                      = Color Inversion Filter Ratio (Applicable to icons based on PNG image files)
@@ -487,11 +475,8 @@ OblyonPresetSections           = Sections
 OblyonPresetCurrent            = current
 OblyonPresetModified           = modified
 OblyonPresetModifiedHelp       = The settings of the database differ from this preset (sections: %s)
-<<<<<<< Updated upstream
 OblyonPresetContrastWarning    = %s text / background couple(s) below the recommended contrast (4.5) or invalid value
 OblyonPresetInvalidValue       = %s: invalid value "%s" (#RRGGBB expected)
-=======
->>>>>>> Stashed changes
 OblyonPresetApplied            = Preset %s applied
 OblyonPresetSaved              = Preset %s updated
 OblyonPresetCreated            = Preset %s created

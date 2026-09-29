@@ -1138,10 +1138,8 @@ img.login, img.printer, img.help, img.entity {
 	border: 1px solid;
 	border-color: rgba(255, 255, 255, 0.2);
 }
-<<<<<<< Updated upstream
-=======
 <?php if ($oblyon_user_block != 'default') { ?>
-/* InfraS add begin 3.8.0 : avatar aux initiales (OBLYON_USER_BLOCK = initials, ou photo sans photo renseignee) : span imprime par js/oblyon.js a la place de l'image
+/* avatar aux initiales (OBLYON_USER_BLOCK = initials, ou photo sans photo renseignee) : span imprime par js/oblyon.js a la place de l'image
    du bloc utilisateur ; meme taille que la photo de la barre, cercle de la couleur principale entoure d'un anneau du texte de la barre (reste visible quand
    la barre est de la couleur principale) ; le menu deroulant le redimensionne (dropdown.inc.php) */
 .oblyon-avatar {
@@ -1163,9 +1161,7 @@ img.login, img.printer, img.help, img.entity {
 	vertical-align: middle;
 	user-select: none;
 }
-/* InfraS add end */
 <?php } ?>
->>>>>>> Stashed changes
 img.userphoto {				/* size for user photo in lists */
 	border-radius: 0.72em;
 	width: 1.4em;

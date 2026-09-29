@@ -92,10 +92,7 @@
 		}
 		return ($fallback !== '' ? $fallback : $value);
 	}
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
 	/**
 	*	Rewrite the stored colours that are still 'r,g,b' as '#RRGGBB' (3.7.0) : the instance constants (llx_const, $tmpuser = null) or the personal colours of a user (llx_user_param).
 	*	Idempotent, one write per converted value, CSS revision bumped when something changed. Called when the Colors tabs open.
@@ -106,10 +103,7 @@
 	function oblyon_colors_normalize_stored($tmpuser = null)
 	{
 		global $db, $conf;
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
 		require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
 		$count	= 0;
 		foreach (oblyon_user_colors_keys() as $name) {
@@ -131,10 +125,7 @@
 		if ($count)	dolibarr_set_const($db, 'MAIN_IHM_PARAMS_REV', getDolGlobalInt('MAIN_IHM_PARAMS_REV') + 1, 'chaine', 0, '', $conf->entity);
 		return $count;
 	}
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
 	/**
 	*	Colour setting : the personal value of the user when his personal colours are on and the value looks like a colour, else the instance value ; 'r,g,b' converted to '#RRGGBB' (3.7.0)
 	*
@@ -154,7 +145,6 @@
 			if (oblyon_color_is_valid($value, $name))	return oblyon_color_to_hex($value);
 		}
 		return oblyon_color_to_hex(getDolGlobalString($name, $default));
-<<<<<<< Updated upstream
 	}
 
 	/**
@@ -196,8 +186,6 @@
 		if ($lb === null)	return $light;
 		$ratio	= function ($l1, $l2) { return (max($l1, $l2) + 0.05) / (min($l1, $l2) + 0.05); };
 		return ($ratio($lum($dark), $lb) >= $ratio($lum($light), $lb)) ? $dark : $light;
-=======
->>>>>>> Stashed changes
 	}
 
 	/**
@@ -433,16 +421,13 @@
 														'OBLYON_COLOR_NOTIF_WARNING_BCKGRD', 'OBLYON_COLOR_NOTIF_WARNING_TEXT', 'OBLYON_COLOR_NOTIF_ERROR_BCKGRD', 'OBLYON_COLOR_NOTIF_ERROR_TEXT');
 		$list['OblyonColorGrpBackgrounds']		= array('OBLYON_COLOR_MAIN', 'OBLYON_COLOR_BCKGRD', 'OBLYON_COLOR_INPUT_BCKGRD', 'OBLYON_COLOR_INPUT_ADD_BCKGRD', 'OBLYON_COLOR_OVERLAY_BCKGRD', 'OBLYON_COLOR_LOGO_BCKGRD', 'OBLYON_COLOR_LOGIN_BCKGRD');
 		$list['OblyonColorGrpText']				= array('THEME_ELDY_TEXT', 'THEME_ELDY_TEXTLINK', 'OBLYON_COLOR_ICON_TEXT');
-<<<<<<< Updated upstream
 		$list['OblyonColorGrpTitles']			= array('OBLYON_COLOR_BTITLE', 'OBLYON_COLOR_STITLE', 'THEME_ELDY_TEXTTITLE', 'THEME_ELDY_TEXTTITLENOTAB', 'THEME_ELDY_TOPBORDER_TITLE1', 'THEME_ELDY_BACKTITLE1');
 		$list['OblyonColorGrpTabs']				= array('THEME_ELDY_BACKTABACTIVE', 'THEME_ELDY_BACKTABCARD1', 'OBLYON_COLOR_TEXTTABACTIVE');
-=======
 		$list['OblyonColorGrpTitles']			= array_values(array_filter(array('OBLYON_COLOR_BTITLE', 'OBLYON_COLOR_STITLE', 'THEME_ELDY_TEXTTITLE', 'THEME_ELDY_TEXTTITLENOTAB', 'THEME_ELDY_TOPBORDER_TITLE1', 'THEME_ELDY_BACKTITLE1',
 														'OBLYON_COLOR_LISTHEAD_FLAT_BCKGRD', 'OBLYON_COLOR_LISTHEAD_FLAT_TXT', 'OBLYON_COLOR_LISTHEAD_FLAT_LINE', 'OBLYON_COLOR_LISTHEAD_FLAT_SEL'), 'oblyon_tab_color_visible'));	// 3.8.0 : couleurs des en-tetes plats seulement dans ce style
 		$list['OblyonColorGrpTabs']				= array_values(array_filter(array('THEME_ELDY_BACKTABACTIVE', 'THEME_ELDY_BACKTABCARD1', 'OBLYON_COLOR_TEXTTABACTIVE',
 														'OBLYON_COLOR_TAB_PILL_BCKGRD', 'OBLYON_COLOR_TAB_PILL_TXT', 'OBLYON_COLOR_TAB_PILL_BORDER',
 														'OBLYON_COLOR_TAB_UNDER_BAND', 'OBLYON_COLOR_TAB_UNDER_TXT', 'OBLYON_COLOR_TAB_UNDER_LINE'), 'oblyon_tab_color_visible'));	// 3.8.0 : seulement les couleurs du style d'onglets choisi
->>>>>>> Stashed changes
 		$list['OblyonColorGrpLines']			= array('OBLYON_COLOR_BLINE', 'OBLYON_COLOR_FLINE', 'THEME_ELDY_USE_HOVER', 'THEME_ELDY_USE_CHECKED', 'OBLYON_COLOR_FLINE_HOVER',
 														'THEME_ELDY_LINEIMPAIR1', 'THEME_ELDY_LINEIMPAIR2', 'THEME_ELDY_LINEPAIR1', 'THEME_ELDY_LINEPAIR2', 'THEME_ELDY_LINEBREAK');
 		$list['OblyonColorGrpTotal']			= array('OBLYON_COLOR_BTOTAL', 'OBLYON_COLOR_FTOTAL');
@@ -702,7 +687,6 @@
 			$out	.= '<div class="oblyon-preset__head"><div class="oblyon-preset__name" title="'.dol_escape_htmltag($tooltip, 0, 1).'">'.oblyon_preset_text($preset['name'] !== '' ? $preset['name'] : $key);
 			if ($preset['scope'] === 'user')	$out	.= ' <span class="badge badge-status4 badge-status" title="'.dol_escape_htmltag($langs->trans('OblyonUserPresetAccessible')).'">'.$langs->trans('OblyonUserPresetAccessibleShort').'</span>';
 			if ($source == 'user')			$out	.= ' <span class="badge badge-status0 badge-status">'.$langs->trans('OblyonUserPresetsMineShort').'</span>';
-<<<<<<< Updated upstream
 			$out	.= '</div><div class="oblyon-preset__icons">';
 			if ($contrast) {
 				$details	= array();
@@ -710,9 +694,7 @@
 				$out	.= '<span class="oblyon-preset__icon oblyon-preset__icon--warn" title="'.dol_escape_htmltag($langs->trans('OblyonPresetContrastWarning', count($contrast))."\n".implode("\n", $details), 0, 1).'"><span class="fa fa-exclamation-triangle"></span></span>';
 			}
 			$out	.= '</div></div>';
-=======
 			$out	.= '</div><div class="oblyon-preset__icons"></div></div>';	// 3.8.0 : plus d'icone de contraste (mecanisme retire)
->>>>>>> Stashed changes
 			$out	.= '<div class="oblyon-preset__actions">';
 			if ($canedit)	$out	.= '<button type="submit" name="action" value="apply_user_preset" class="butAction small oblyon-preset__apply">'.$langs->trans('OblyonUserPresetApply').'</button>';
 			if ($source == 'user') {

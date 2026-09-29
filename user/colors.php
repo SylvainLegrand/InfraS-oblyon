@@ -197,7 +197,6 @@
 	print '</table>';
 	print '</div>';
 
-<<<<<<< Updated upstream
 	// Contrast check of the personal palette (same couples as the preset cards)
 	if (!$edit && $enabled && count($snapshot)) {
 		$low	= oblyon_check_preset_contrast(array('colors' => $snapshot));
@@ -207,9 +206,6 @@
 			print '<div class="warning">'.$langs->trans('OblyonPresetContrastWarning', count($low)).'<br>'.implode('<br>', $details).'</div>';
 		}
 	}
-=======
-	// (3.8.0 : le rapport de contraste de la palette personnelle, affiche ici depuis la 3.6.0, est retire)
->>>>>>> Stashed changes
 
 	if ($edit) {
 		print $form->buttonsSaveCancel();

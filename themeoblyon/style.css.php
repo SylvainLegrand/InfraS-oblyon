@@ -321,11 +321,8 @@
 	$colorbacktitle1			= oblyon_color_to_hex($colorbacktitle1, $oblyon_color_fallback);
 	$autocolorshadow			= oblyon_txt_color_hex($colorbacktitle1);	// $colorshadowtitle : contraste sur le fond des filtres (comportement d'origine, inchangé)
 	$colorshadowtitle			= ($autocolorshadow == 'FFFFFF') ? '888888' : 'FFFFFF';
-<<<<<<< Updated upstream
 	if (oblyon_color_setting('THEME_ELDY_TEXTTITLE') === '') {	// meme test (ni instance ni utilisateur) via la fonction commune
-=======
 	if (in_array(oblyon_color_setting('THEME_ELDY_TEXTTITLE'), array('', '#'), true)) {	// meme test (ni instance ni utilisateur) via la fonction commune ; InfraS change 3.8.0 : '#' (champ laisse vide dans l'onglet Couleurs, enregistre '#') = contraste automatique aussi
->>>>>>> Stashed changes
 		// contraste auto calculé sur le VRAI fond des titres = $colorbtitle (OBLYON_COLOR_BTITLE), pas sur le fond des filtres
 		$autocolortexttitle	= oblyon_txt_color_hex($colorbtitle);
 		$colortexttitle		= '#'.(($autocolortexttitle == '000000') ? '101010' : $autocolortexttitle);
@@ -373,7 +370,7 @@
 	$infras_radius	= getDolGlobalInt('THEME_ELDY_BORDER_RADIUS', 6);
 	if ($infras_radius <= 0)	$infras_radius	= 6;	// valeur nulle => rayon visible par defaut
 
-	// InfraS add begin : densite de l'interface (3.8.0, option OBLYON_DENSITY) : une seule commande pour la hauteur des cellules et des lignes,
+	// densite de l'interface (3.8.0, option OBLYON_DENSITY) : une seule commande pour la hauteur des cellules et des lignes,
 	// des en-tetes de liste, des champs, des boutons d'action et les marges des fiches ; les valeurs "compact" sont celles de la 3.4.1 (rendu inchange par defaut)
 	$oblyon_density_values	= array(
 		'compact'		=> array('cell_py' => '5px',	'cell_px' => '8px',		'row_lh' => '1.5em',	'head_h' => '34px',	'control_py' => '5px',	'btn_py' => '0.6em',	'card_py' => '12px'),
@@ -383,7 +380,6 @@
 	$oblyon_density			= getDolGlobalString('OBLYON_DENSITY', 'compact');
 	if (! isset($oblyon_density_values[$oblyon_density]))	$oblyon_density	= 'compact';	// valeur inconnue => densite d'origine
 	$oblyon_density_tokens	= $oblyon_density_values[$oblyon_density];
-	// InfraS add end
 
 	// InfraS add begin : jetons de design 3.4.1 - couleurs neutres derivees du preset (melange fond des lignes / texte des lignes), bordure des champs selon l'option
 	// (oblyon_mix_colors() vit dans lib/oblyon_colors.lib.php depuis 3.8.0 : partagee avec les onglets Couleurs)
@@ -396,9 +392,7 @@
 	$login_txtcolor			= (oblyon_txt_color_hex($login_bgcolor) == 'FFFFFF') ? '#FFFFFF' : $colorfline;	// InfraS change 3.7.0 : entree hex
 	// InfraS add end
 
-<<<<<<< Updated upstream
-=======
-	// InfraS add begin : styles d'interface 3.8.0 - teintes d'accent partagees par les onglets, boutons, badges et avatar, puis le style choisi pour chaque composant
+	// styles d'interface 3.8.0 - teintes d'accent partagees par les onglets, boutons, badges et avatar, puis le style choisi pour chaque composant
 	$oblyon_accent_tint			= oblyon_mix_colors($colorbline, $maincolor, 0.12);	// fond teinte leger (onglet pilule actif, bouton "doux")
 	$oblyon_accent_tint_strong	= oblyon_mix_colors($colorbline, $maincolor, 0.20);	// survol du fond teinte
 	$oblyon_on_accent			= oblyon_text_on($maincolor);						// texte lisible (sombre ou blanc) sur la couleur principale
@@ -452,9 +446,7 @@
 	// Agenda natif (lot 10) : classic (rendu d'origine) / modern (grille sur le fond des lignes, aujourd'hui en teinte d'accent, cartes d'evenements teintees de leur couleur) ; widgets.inc.php + js/oblyon.js
 	$oblyon_agenda_style		= getDolGlobalString('OBLYON_AGENDA_STYLE', 'classic');
 	if ($oblyon_agenda_style != 'modern')	$oblyon_agenda_style	= 'classic';
-	// InfraS add end
 
->>>>>>> Stashed changes
 	require __DIR__.'/global.inc.php';
 
 	if (is_object($db))	$db->close();

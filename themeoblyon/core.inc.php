@@ -125,17 +125,13 @@
 	--colorWarningBg: <?php print $colorWarningBg; ?>;
 	--colorWarningBorder: <?php print $colorWarningBorder; ?>;
 	--colorWarningTxt: <?php print $colorWarningTxt; ?>;
-<<<<<<< Updated upstream
-=======
-	/* InfraS add begin 3.8.0 : couleurs des notifications jNotify (groupe Messages), lues par style.css.php mais jamais imprimees jusqu'ici */
+	/* couleurs des notifications jNotify (groupe Messages), lues par style.css.php mais jamais imprimees jusqu'ici */
 	--colorNotifInfoBg: <?php print $colorNotifInfoBg; ?>;
 	--colorNotifInfoTxt: <?php print $colorNotifInfoTxt; ?>;
 	--colorNotifWarningBg: <?php print $colorNotifWarningBg; ?>;
 	--colorNotifWarningTxt: <?php print $colorNotifWarningTxt; ?>;
 	--colorNotifErrorBg: <?php print $colorNotifErrorBg; ?>;
 	--colorNotifErrorTxt: <?php print $colorNotifErrorTxt; ?>;
-	/* InfraS add end */
->>>>>>> Stashed changes
 	--colorButtonAction1: <?php print $colorButtonAction1; ?>;
 	--colorButtonAction2: <?php print $colorButtonAction2; ?>;
 	--colorTextButtonAction: <?php print $colorTextButtonAction; ?>;
@@ -204,13 +200,11 @@
 	--oblyon-transition: .15s ease-in-out;
 	--login_bgcolor: <?php print $login_bgcolor; ?>;
 	--login_txtcolor: <?php print $login_txtcolor; ?>;
-<<<<<<< Updated upstream
 	/* densite des listes : une seule valeur pour toutes les pages (compacte) */
 	--oblyon-cell-py: 5px;
 	--oblyon-cell-px: 8px;
 	--oblyon-row-lh: 1.5em;
 	--oblyon-head-h: 34px;
-=======
 	/* densite des listes, champs, boutons et fiches : option OBLYON_DENSITY (3.8.0), valeurs choisies dans style.css.php (compact = valeurs d'origine) */
 	--oblyon-cell-py: <?php print $oblyon_density_tokens['cell_py']; ?>;
 	--oblyon-cell-px: <?php print $oblyon_density_tokens['cell_px']; ?>;
@@ -245,7 +239,6 @@
 	--oblyon-listhead-line: <?php print $oblyon_listhead_line; ?>;
 	--oblyon-listhead-sel: <?php print $oblyon_listhead_sel; ?>;
 	--oblyon-listhead-filter: <?php print $oblyon_listhead_filter; ?>;
->>>>>>> Stashed changes
 	/* InfraS add end */
 }
 
@@ -399,7 +392,6 @@ input, input.flat, textarea, textarea.flat, form.flat select, select, select.fla
 
 input {
 	line-height: 1.3em;
-<<<<<<< Updated upstream
 	padding: 5px;
 }
 .liste_titre input {
@@ -410,18 +402,16 @@ select {
 	padding-top: 5px;
 	padding-right: 4px;
 	padding-bottom: 5px;
-=======
-	padding: var(--oblyon-control-py) 5px;	/* InfraS change : densite (3.8.0) */
+	padding: var(--oblyon-control-py) 5px;	/* densite (3.8.0) */
 }
 .liste_titre input {
-	padding: var(--oblyon-control-py) 5px;	/* InfraS change : densite (3.8.0) */
+	padding: var(--oblyon-control-py) 5px;	/* densite (3.8.0) */
 	font-family: var(--fontfamilydol);
 }
 select {
-	padding-top: var(--oblyon-control-py);	/* InfraS change : densite (3.8.0) */
+	padding-top: var(--oblyon-control-py);	/* densite (3.8.0) */
 	padding-right: 4px;
-	padding-bottom: var(--oblyon-control-py);	/* InfraS change : densite (3.8.0) */
->>>>>>> Stashed changes
+	padding-bottom: var(--oblyon-control-py);	/* densite (3.8.0) */
 	padding-left: 2px;
 }
 input, select {
@@ -1072,11 +1062,8 @@ section.setupsection {
 select.flat, form.flat select {
 	font-weight: normal;
 	font-size: unset;
-<<<<<<< Updated upstream
 	height: 2em;
-=======
-	height: calc(1.3em + 2 * var(--oblyon-control-py) + 2px);	/* InfraS change : densite (3.8.0) : meme hauteur que les champs (interligne + 2 x remplissage + bordures), etait 2em */
->>>>>>> Stashed changes
+	height: calc(1.3em + 2 * var(--oblyon-control-py) + 2px);	/* densite (3.8.0) : meme hauteur que les champs (interligne + 2 x remplissage + bordures), etait 2em */
 }
 
 input:disabled,

@@ -115,13 +115,10 @@ OBLYON_COLOR_LOGIN_BCKGRD            = Couleur de fond de la page de connexion
 OBLYON_COLOR_BTITLE                  = Couleur de fond des titres
 OBLYON_COLOR_FTITLE                  = Couleur de texte des titres
 OBLYON_COLOR_STITLE                  = Couleur de texte du titre principal
-<<<<<<< Updated upstream
-=======
 OBLYON_COLOR_LISTHEAD_FLAT_BCKGRD    = En-têtes de liste plats : fond (vide = fond des lignes)
 OBLYON_COLOR_LISTHEAD_FLAT_TXT       = En-têtes de liste plats : texte (vide = texte des lignes atténué)
 OBLYON_COLOR_LISTHEAD_FLAT_LINE      = En-têtes de liste plats : filet (vide = cadre neutre)
 OBLYON_COLOR_LISTHEAD_FLAT_SEL       = En-têtes de liste plats : colonne triée et survol (vide = couleur principale)
->>>>>>> Stashed changes
 OBLYON_COLOR_BLINE                   = Couleur de fond des lignes
 OBLYON_COLOR_BLINE_HOVER             = Couleur de fond des lignes survolées
 OBLYON_COLOR_FDATE_DEFAULT           = Couleur de date par défaut (date du jour) dans le sélecteur de date
@@ -163,11 +160,9 @@ OBLYON_COLOR_LEFTMENU_TXT_HOVER      = Couleur du texte survolé du menu gauche
 OBLYON_COLOR_LEFTMENU_BCKGRD_SEL     = Couleur de fond de l'entrée sélectionnée du menu gauche
 OBLYON_COLOR_LEFTMENU_TXT_SEL        = Couleur du texte de l'entrée sélectionnée du menu gauche
 OBLYON_COLOR_BUTTON_ACTION1          = Couleur 1 de fond des boutons
-<<<<<<< Updated upstream
 OBLYON_COLOR_BUTTON_ACTION2          = Couleur 2 de fond des boutons
 OBLYON_COLOR_BUTTON_DELETE1          = Couleur 1 de fond des boutons dangereux
 OBLYON_COLOR_BUTTON_DELETE2          = Couleur 2 de fond des boutons dangereux
-=======
 OBLYON_COLOR_BUTTON_ACTION2          = Boutons d'action : fond au survol
 OBLYON_COLOR_BUTTON_BORDER           = Boutons d'action : bordure
 OBLYON_COLOR_BUTTON_TXT_HOVER        = Boutons d'action : texte au survol
@@ -196,7 +191,6 @@ OBLYON_COLOR_BUTTON_FORM_FLAT_TXT    = Boutons de formulaire : texte (Contour / 
 OBLYON_COLOR_BUTTON_FORM_FLAT_BORDER = Boutons de formulaire : bordure (Contour / Doux)
 OBLYON_COLOR_BUTTON_FORM_FLAT_BCKGRD_HOVER= Boutons de formulaire : fond au survol (Contour / Doux)
 OBLYON_COLOR_BUTTON_FORM_FLAT_TXT_HOVER= Boutons de formulaire : texte au survol (Contour / Doux)
->>>>>>> Stashed changes
 OBLYON_COLOR_INFO_BORDER             = Couleur des bordures des messages d'information
 OBLYON_COLOR_INFO_BCKGRD             = Couleur de fond des messages d'information
 OBLYON_COLOR_INFO_TEXT               = Couleur de texte des messages d'information
@@ -213,15 +207,12 @@ OBLYON_COLOR_NOTIF_WARNING_TEXT      = Couleur de texte des notifications d'aver
 OBLYON_COLOR_NOTIF_ERROR_BCKGRD      = Couleur de fond des notifications d'erreur
 OBLYON_COLOR_NOTIF_ERROR_TEXT        = Couleur de texte des notifications d'erreur
 OBLYON_COLOR_TEXTTABACTIVE           = Couleur de texte des onglets actifs
-<<<<<<< Updated upstream
-=======
 OBLYON_COLOR_TAB_PILL_BCKGRD         = Couleur de fond de l'onglet actif (pilules ; vide = teinte de la couleur principale)
 OBLYON_COLOR_TAB_PILL_TXT            = Couleur de texte de l'onglet actif (pilules ; vide = couleur principale)
 OBLYON_COLOR_TAB_PILL_BORDER         = Couleur de bordure des onglets (pilules, avec l'option Bordure ; vide = cadre neutre)
 OBLYON_COLOR_TAB_UNDER_BAND          = Couleur de fond de la bande des onglets (soulignés ; vide = fond neutre)
 OBLYON_COLOR_TAB_UNDER_TXT           = Couleur de texte de l'onglet actif (soulignés ; vide = couleur principale)
 OBLYON_COLOR_TAB_UNDER_LINE          = Couleur du trait de soulignement (soulignés ; vide = couleur principale)
->>>>>>> Stashed changes
 OBLYON_COLOR_INPUT_BCKGRD            = Couleur de fond des zones de saisie
 OBLYON_COLOR_INPUT_ADD_BCKGRD        = Couleur de fond des champs (si option "Fond gris sur les champs de saisie" active)
 OBLYON_COLOR_BOX_SHADOW              = Couleur de l'ombre des petites boîtes (si option "Ombre portée" active)
@@ -245,13 +236,10 @@ OBLYON_COLOR_WEATHER_LEVEL2          = Couleur météo niveau 2 (tableau de bord
 OBLYON_COLOR_WEATHER_LEVEL3          = Couleur météo niveau 3 (tableau de bord)
 OBLYON_COLOR_WEATHER_LEVEL4          = Couleur météo niveau 4 (tableau de bord)
 OBLYON_COLOR_INFOBOX_UPDATE          = Couleur du badge « mise à jour disponible »
-<<<<<<< Updated upstream
 THEME_ELDY_BTNACTION                 = Couleur de fond des boutons d'action (thème Eldy)
 THEME_ELDY_TEXTBTNACTION             = Couleur du texte des boutons d'action (thème Eldy)
-=======
 THEME_ELDY_BTNACTION                 = Boutons d'action : fond (thème Eldy)
 THEME_ELDY_TEXTBTNACTION             = Boutons d'action : texte (thème Eldy)
->>>>>>> Stashed changes
 THEME_ELDY_USE_HOVER                 = Couleur de fond des lignes survolées (thème Eldy)
 THEME_ELDY_USE_CHECKED               = Couleur de fond des lignes cochées (thème Eldy)
 InvertRatioDesc                      = Ratio du filtre d'inversion des couleurs (Applicable aux icones basées sur des fichiers images PNG)
@@ -486,11 +474,8 @@ OblyonPresetSections           = Sections
 OblyonPresetCurrent            = actif
 OblyonPresetModified           = modifié
 OblyonPresetModifiedHelp       = Les réglages en base diffèrent de ce preset (sections : %s)
-<<<<<<< Updated upstream
 OblyonPresetContrastWarning    = %s couple(s) texte / fond sous le contraste recommandé (4,5) ou valeur invalide
 OblyonPresetInvalidValue       = %s : valeur « %s » invalide (attendu #RRGGBB)
-=======
->>>>>>> Stashed changes
 OblyonPresetApplied            = Preset %s appliqué
 OblyonPresetSaved              = Preset %s mis à jour
 OblyonPresetCreated            = Preset %s créé

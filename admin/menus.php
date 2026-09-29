@@ -65,7 +65,7 @@ if (preg_match('/set_(.*)/', $action, $reg)) {
 }
 // Update buttons management
 if (preg_match('/update_(.*)/', $action, $reg)) {
-	$list									= array ('Gen' => array('OBLYON_EFFECT_LEFTMENU', 'OBLYON_EFFECT_REDUCE_LEFTMENU', 'OBLYON_USER_BLOCK'));	// InfraS change : bloc utilisateur (3.8.0)
+	$list									= array ('Gen' => array('OBLYON_EFFECT_LEFTMENU', 'OBLYON_EFFECT_REDUCE_LEFTMENU', 'OBLYON_USER_BLOCK'));
 	$confkey								= $reg[1];
 	$error									= 0;
 	foreach ($list[$confkey] as $constname)	$result	= dolibarr_set_const($db, $constname, GETPOST($constname, 'alpha'), 'chaine', 0, 'Oblyon module', $conf->entity);
@@ -141,12 +141,11 @@ $metas		= array(array(), $conf->entity, 0, 0, 1, 0, 0, 0, '', 'menus');
 oblyon_print_input('THEME_STICKY_TOPMENU', 'on_off', $langs->trans('StickyTopBar').' (thème Eldy)'.$warning, '', $metas, 2, 1);	// Sticky top bar
 $metas		= array(array(), $conf->entity, 0, 0, 1, 0, 0, 0, '', 'menus');
 oblyon_print_input('OBLYON_HIDE_TOPICONS', 'on_off', $langs->trans('HideTopIcons'), '', $metas, 2, 1);	// Hide top icons
-// InfraS add begin : bloc utilisateur (3.8.0) : par defaut (rendu d'origine) / initiales / photo sinon initiales ; les deux nouvelles valeurs redessinent aussi le menu deroulant utilisateur
+// bloc utilisateur (3.8.0) : par defaut (rendu d'origine) / initiales / photo sinon initiales ; les deux nouvelles valeurs redessinent aussi le menu deroulant utilisateur
 $formub		= new Form($db);
 $ub_options	= array('default' => $langs->trans('OblyonUserBlockDefault'), 'initials' => $langs->trans('OblyonUserBlockInitials'), 'photo' => $langs->trans('OblyonUserBlockPhoto'));
 $metas		= $formub->selectarray('OBLYON_USER_BLOCK', $ub_options, getDolGlobalString('OBLYON_USER_BLOCK', 'default'), 0, 0, 0, 'class = "fontsizeinherit nopadding cursorpointer"', 0, 0, 0, '', 'maxwidth200');
 oblyon_print_input('OBLYON_USER_BLOCK', 'select', $langs->trans('OblyonUserBlock'), 'OblyonUserBlockHelp', $metas, 2, 1);	// User block
-// InfraS add end
 $metas		= array(array(), $conf->entity, 0, 0, 1, 0, 0, 1, '', 'menus');
 oblyon_print_input('THEME_MENU_COLORLOGO', 'on_off', $langs->trans('ThemeMenuColorLogo').' (thème Eldy)', '', $metas, 2, 1);
 // Left menu
@@ -182,7 +181,7 @@ if (getDolGlobalString('MAIN_MENU_INVERT')) {
 	oblyon_print_input('OBLYON_REDUCE_LEFTMENU', 'on_off', $langs->trans('ReduceLeftMenu').$warning, '', $metas, 2, 1);	// Micro left menu
 	// Effect hover leftmenu
 	if (getDolGlobalInt('OBLYON_REDUCE_LEFTMENU')) {
-		// InfraS change begin : libelle propre au menu reduit (OpenEffectReduce) + 3e effet "volets de sous-menus" (flyout) ; aide en infobulle sur le libelle (3.8.0)
+		// libelle propre au menu reduit (OpenEffectReduce) + 3e effet "volets de sous-menus" (flyout) ; aide en infobulle sur le libelle (3.8.0)
 		$formhelp	= new Form($db);
 		print '			<tr class = "oddeven">
 							<td colspan = "2">'.$formhelp->textwithtooltip($langs->trans('OpenEffectReduce'), $langs->trans('EffectMicroMenuFlyoutHelp'), 2, 1, img_help(1, '')).(getDolGlobalString('OBLYON_EFFECT_REDUCE_LEFTMENU') == 'flyout' && getDolGlobalString('OBLYON_HIDE_LEFTMENU') ? '<br><span class = "warning">'.$langs->trans('EffectMicroMenuFlyoutHideWarning').'</span>' : '').'</td>
@@ -198,7 +197,7 @@ if (getDolGlobalString('MAIN_MENU_INVERT')) {
 	}
 }
 $metas		= array(array(), $conf->entity, 0, 0, 1, 0, 0, 0, '', 'menus');
-oblyon_print_input('OBLYON_TOUCH_MENU', 'on_off', $langs->trans('TouchMenu'), 'TouchMenuHelp', $metas, 2, 1);	// Touch screen menu mode ; InfraS change 3.8.0 : aide en infobulle
+oblyon_print_input('OBLYON_TOUCH_MENU', 'on_off', $langs->trans('TouchMenu'), 'TouchMenuHelp', $metas, 2, 1);	// Touch screen menu mode ; aide en infobulle
 // InfraS add begin : disposition mobile (3.5.0)
 $metas		= array(array(), $conf->entity, 0, 0, 1, 0, 0, 0, '', 'menus');
 oblyon_print_input('OBLYON_MOBILE_LAYOUT', 'on_off', $langs->trans('OblyonMobileLayout'), 'OblyonMobileLayoutHelp', $metas, 2, 1);	// Mobile layout ; aide en infobulle (3.8.0)

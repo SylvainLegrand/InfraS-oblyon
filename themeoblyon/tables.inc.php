@@ -116,9 +116,7 @@ table.border td {
 }
 
 table.border td img { margin: 0 .1em; }
-<<<<<<< Updated upstream
-=======
-/* InfraS add begin 3.8.0 : tableaux "border" imprimes hors de la carte (apres dol_get_fiche_end() : rapprochement bancaire, traductions produit / categorie, prix, documents,
+/* tableaux "border" imprimes hors de la carte (apres dol_get_fiche_end() : rapprochement bancaire, traductions produit / categorie, prix, documents,
    statistiques...) : poses sur le fond de page, leurs cellules n'avaient que le quadrillage --colortopbordertitle1 (blanc quand le liseret des titres est blanc : cases grises
    separees de traits blancs) ; ils prennent l'habillage d'une carte (fond des lignes, cadre arrondi, filets horizontaux, remplissage de la densite).
    Les tableaux DANS la carte (.tabBar) ne changent pas */
@@ -138,8 +136,6 @@ table.border:not(.tabBar table) > tbody > tr > td {
 table.border:not(.tabBar table) > tbody > tr:last-child > td {
 	border-bottom: 0;
 }
-/* InfraS add end */
->>>>>>> Stashed changes
 
 td.border {
 	border: 1px solid #000;

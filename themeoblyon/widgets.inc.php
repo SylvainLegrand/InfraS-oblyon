@@ -449,10 +449,8 @@ table.cal_event td.cal_event_right {
 .cal_peruserviewname {
 	max-width: 140px; height: 22px;
 }
-<<<<<<< Updated upstream
-=======
 <?php if ($oblyon_agenda_style == 'modern') { ?>
-/* InfraS add begin : agenda natif "moderne" (OBLYON_AGENDA_STYLE = modern, 3.8.0), ecrit apres les regles d'origine (memes selecteurs + !important) ; vues mois, semaine, jour
+/* agenda natif "moderne" (OBLYON_AGENDA_STYLE = modern, 3.8.0), ecrit apres les regles d'origine (memes selecteurs + !important) ; vues mois, semaine, jour
    (toutes imprimees dans table.cal_month par comm/action/index.php). Grille : jours du mois sur le fond des lignes, jours hors mois sur le fond neutre avec numero attenue,
    filets --oblyon-border, cadre arrondi, aujourd'hui sur la teinte d'accent avec le numero dans une pastille de la couleur principale, "+" visible au survol de la case.
    En-tete des jours plat (texte attenue en petites capitales). Evenements : carte teintee de sa propre couleur (le core imprime la couleur du type / de l'utilisateur en
@@ -566,9 +564,7 @@ table.cal_event td.cal_event_right {
 .cal_event_notbusy {
 	opacity: .7;
 }
-/* InfraS add end */
 <?php } ?>
->>>>>>> Stashed changes
 
 .topmenuimage {
 	background-size: 28px auto;
@@ -1310,7 +1306,6 @@ div#ecm-layout-center {
 /*  jNotify																	   */
 /* ============================================================================== */
 
-<<<<<<< Updated upstream
 .jnotify-container {
 	position: fixed !important;
 <?php if (getDolGlobalString('MAIN_JQUERY_JNOTIFY_BOTTOM')) { ?>
@@ -1345,8 +1340,7 @@ div.jnotify-background {
 	box-shadow: var(--oblyon-shadow-lg) !important;	/* InfraS change : valeur #8888 invalide remplacee */
 	border-radius: var(--oblyon-radius) !important;	/* InfraS add */
 }
-=======
-/* InfraS change begin 3.8.0 : messages jNotify en cartes sous la barre du haut, a droite : fond et texte des couleurs "Messages et notifications"
+/* messages jNotify en cartes sous la barre du haut, a droite : fond et texte des couleurs "Messages et notifications"
    (OBLYON_COLOR_NOTIF_*, jusqu'ici lues mais jamais peintes), liseret et icone de la couleur du texte, croix discrete, glissement a l'apparition (option Animations) */
 .jnotify-container {
 	position: fixed !important;
@@ -1437,8 +1431,6 @@ div.jnotify-background {
 .jnotify-container .jnotify-close:hover {
 	opacity: 1;
 }
-/* InfraS change end */
->>>>>>> Stashed changes
 
 /* jnotify for the login page */
 .bodylogin .jnotify-container {

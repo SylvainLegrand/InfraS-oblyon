@@ -35,11 +35,8 @@ div.fiche>form>div.div-table-responsive, div.fiche>form>div.div-table-responsive
 		<?php } else { ?>
 			top: 0;
 		<?php } ?>
-<<<<<<< Updated upstream
 		background-color: var(--colorbtitle);
-=======
-		background-color: <?php print ($oblyon_listhead_style == 'flat' ? 'var(--oblyon-listhead-bg)' : 'var(--colorbtitle)'); ?>;	/* InfraS change 3.8.0 : fond opaque de l'en-tete collant selon le style d'en-tete (plat = fond du style) */
->>>>>>> Stashed changes
+		background-color: <?php print ($oblyon_listhead_style == 'flat' ? 'var(--oblyon-listhead-bg)' : 'var(--colorbtitle)'); ?>;	/* fond opaque de l'en-tete collant selon le style d'en-tete (plat = fond du style) */
 		z-index: 1;
 	}
 	tr.liste_titre.box_titre th {
@@ -86,17 +83,14 @@ div.tabs:first-of-type, .fiche > div.tabs
 	margin: 0 auto 0 0 !important;
 	height: auto;
 	z-index: 50;
-<<<<<<< Updated upstream
-=======
-<?php if ($oblyon_tabs_style == 'pills') { // InfraS add begin : styles d'onglets 3.8.0 (apres le raccourci margin, qui ecraserait margin-bottom) : pas de filet sous des pilules, l'espace de 12 px avant la carte passe en remplissage interieur du bandeau (couvert par son fond quand il est colle en haut) ; onglets soulignes : filet neutre et marge sous le filet ?>
+<?php if ($oblyon_tabs_style == 'pills') { // styles d'onglets 3.8.0 (apres le raccourci margin, qui ecraserait margin-bottom) : pas de filet sous des pilules, l'espace de 12 px avant la carte passe en remplissage interieur du bandeau (couvert par son fond quand il est colle en haut) ; onglets soulignes : filet neutre et marge sous le filet ?>
 	border-bottom: 0 !important;
 	padding-bottom: 12px;
 <?php } elseif ($oblyon_tabs_style == 'underline') { ?>
 	background-color: var(--oblyon-tab-under-band);	/* bande du style (le fond de page ci-dessus est celui des boites) */
 	border-bottom: solid 1px var(--oblyon-tab-under-border) !important;
 	margin-bottom: 12px !important;
-<?php } // InfraS add end ?>
->>>>>>> Stashed changes
+<?php } ?>
 }
 
 #dialogforpopup .tabs {
@@ -597,11 +591,8 @@ div.tabs:first-of-type, .fiche > div.tabs
 		width: 95%;
 	}
 }
-<<<<<<< Updated upstream
-=======
-
 <?php if ($oblyon_listhead_style == 'flat') { ?>
-/* InfraS add begin : en-tetes de liste "plats" (OBLYON_LIST_HEADER_STYLE = flat, 3.8.0), ecrits apres tables.inc.php et public.inc.php (cascade) :
+/* en-tetes de liste "plats" (OBLYON_LIST_HEADER_STYLE = flat, 3.8.0), ecrits apres tables.inc.php et public.inc.php (cascade) :
    la ligne de titre repose sur le fond du style (fond des lignes par defaut) avec un texte attenue, graisse 600, ferme par un filet ;
    la colonne triee prend la couleur "colonne triee" (couleur principale par defaut) sans fond ; la ligne de filtres passe sur un fond a peine teinte ;
    les totaux "comme l'en-tete" suivent le style (fond du style, filet double au-dessus). Les titres des widgets (tr.box_titre) et les autres usages de
@@ -655,6 +646,4 @@ tr.liste_total td, form.liste_total div {
 	border-top: 2px solid var(--oblyon-listhead-line);
 }
 <?php } ?>
-/* InfraS add end */
 <?php } ?>
->>>>>>> Stashed changes

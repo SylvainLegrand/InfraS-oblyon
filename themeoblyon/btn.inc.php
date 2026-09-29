@@ -230,7 +230,7 @@ span.butAction, span.butActionDelete {
     font-weight: bold;
 
     margin: 0em <?php echo ($dol_optimize_smallscreen ? '0.6' : '0.9'); ?>em !important;
-    padding: var(--oblyon-btn-py) <?php echo ($dol_optimize_smallscreen ? '0.6' : '0.7'); ?>em;	/* InfraS change : densite (3.8.0) */
+    padding: var(--oblyon-btn-py) <?php echo ($dol_optimize_smallscreen ? '0.6' : '0.7'); ?>em;	/* densite (3.8.0) */
     font-family: var(--fontlist);
     display: inline-block;
     text-align: center;
@@ -314,7 +314,7 @@ span.butActionNewRefused>span.fa, span.butActionNewRefused>span.fa:hover
     white-space: nowrap !important;
     cursor: not-allowed !important;
     margin: 0em <?php echo ($dol_optimize_smallscreen ? '0.6' : '0.9'); ?>em;
-    padding: var(--oblyon-btn-py) <?php echo ($dol_optimize_smallscreen ? '0.6' : '0.7'); ?>em;	/* InfraS change : densite (3.8.0) */
+    padding: var(--oblyon-btn-py) <?php echo ($dol_optimize_smallscreen ? '0.6' : '0.7'); ?>em;	/* densite (3.8.0) */
     font-family: var(--fontlist) !important;
     display: inline-block;
     text-align: center;
@@ -376,10 +376,8 @@ span.butActionNewRefused>span.fa, span.butActionNewRefused>span.fa:hover
 }
 /* InfraS change end */
 
-<<<<<<< Updated upstream
-=======
 <?php $oblyon_btn_custom = false; foreach (oblyon_button_families('filled', true) as $oblyon_btn_f) { foreach (array('border', 'txt_hover') as $oblyon_btn_r) { if (getDolGlobalString($oblyon_btn_f['colors'][$oblyon_btn_r]) && getDolGlobalString($oblyon_btn_f['colors'][$oblyon_btn_r]) != '#') $oblyon_btn_custom = true; } } if ($oblyon_button_style != 'filled' || getDolGlobalInt('OBLYON_BUTTON_FORM_OWN_COLORS') || $oblyon_btn_custom || (getDolGlobalString('OBLYON_COLOR_BUTTON_DELETE_TXT') && getDolGlobalString('OBLYON_COLOR_BUTTON_DELETE_TXT') != '#')) { ?>
-/* InfraS add begin : couleurs des boutons par famille (3.8.0) : action / suppression / formulaire, chacune avec fond, texte, bordure, fond et texte au survol
+/* couleurs des boutons par famille (3.8.0) : action / suppression / formulaire, chacune avec fond, texte, bordure, fond et texte au survol
    (jetons --oblyon-btn-<famille>-<role>, resolus selon OBLYON_BUTTON_STYLE dans style.css.php : contour = fond transparent + cadre, doux = fond teinte, pleins = defauts d'origine).
    Bloc imprime seulement quand il change quelque chose (style autre que pleins, couleurs propres de formulaire, ou une bordure / un texte de survol / un texte de Supprimer renseigne) :
    en pleins sans reglage, les regles d'origine ci-dessus suffisent et la feuille reste identique. Ecrit apres les regles d'origine avec les memes selecteurs et !important.
@@ -442,10 +440,8 @@ input.buttonreset {
 	background-color: transparent !important;
 	color: var(--colortextlink) !important;
 }
-/* InfraS add end */
 <?php } ?>
 
->>>>>>> Stashed changes
 /*
 TITLE BUTTON
  */

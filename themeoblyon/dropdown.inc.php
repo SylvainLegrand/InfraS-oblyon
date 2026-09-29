@@ -265,7 +265,7 @@ if (! defined('ISLOADEDBYSTEELSHEET')) die('Must be call by steelsheet'); ?>
 		color: #fff;
 	}
 <?php if ($oblyon_user_block != 'default') { ?>
-/* InfraS add begin 3.8.0 : menu deroulant utilisateur redessine (OBLYON_USER_BLOCK = initials / photo, variable de style.css.php) : carte flottante sur les jetons
+/* menu deroulant utilisateur redessine (OBLYON_USER_BLOCK = initials / photo, variable de style.css.php) : carte flottante sur les jetons
    du theme (fond flottant, bordure, rayon, ombre), en-tete centre sur la teinte d'accent avec la photo ou l'avatar cercle de la couleur principale, nom en 600 et
    dates de connexion attenuees, corps avec les deux liens "Afficher..." du core en lignes cliquables (fond neutre au survol), pied en flex avec les boutons Fiche /
    Deconnexion sur les jetons de boutons (--oblyon-btn-action-* / --oblyon-btn-delete-*, donc le style de boutons choisi). Le balisage du core (top_menu_user())
@@ -418,7 +418,6 @@ if (! defined('ISLOADEDBYSTEELSHEET')) die('Must be call by steelsheet'); ?>
 	border-color: var(--oblyon-btn-delete-bg-hover);
 	box-shadow: none;
 }
-/* InfraS add end */
 <?php } ?>
 
     .dropdown-menu a.top-menu-dropdown-link {

@@ -58,7 +58,7 @@ class ActionsOblyon
 		$this->db = $db;
 	}
 
-	// InfraS add begin : couleurs par utilisateur (3.6.0) : l'onglet "Couleurs" declare par le descripteur est ajoute en fin de liste par
+	// couleurs par utilisateur (3.6.0) : l'onglet "Couleurs" declare par le descripteur est ajoute en fin de liste par
 	// complete_head_from_modules() ; ce hook le deplace juste apres l'onglet core "Interface utilisateur" (guisetup) de la fiche utilisateur
 	/**
 	 * Overloading the completeTabsHead function : reorder the tabs of the user card
@@ -102,11 +102,8 @@ class ActionsOblyon
 		$parameters['head']	= $newhead;	// 'head' is passed by reference by complete_head_from_modules()
 		return 0;
 	}
-	// InfraS add end
-<<<<<<< Updated upstream
 
-=======
-	// InfraS add begin : zone haut-droite (3.8.0), deux options imprimees dans div.login_block_other juste avant le bloc utilisateur du core :
+	// zone haut-droite (3.8.0), deux options imprimees dans div.login_block_other juste avant le bloc utilisateur du core :
 	// - OBLYON_USER_BLOCK (initials / photo) : marqueur cache (mode, initiales, photo renseignee ou non) lu par js/oblyon.js, qui remplace dans le navigateur les deux
 	//   images du bloc utilisateur (barre et en-tete du menu deroulant) par un cercle aux initiales ; le menu deroulant redessine est du CSS pur (dropdown.inc.php)
 	// - OBLYON_NOTIFICATION_CENTER : cloche ; le contenu (messages jNotify interceptes, compteur, liste, marquage lu) est entierement gere par js/oblyon.js dans le
@@ -157,20 +154,4 @@ class ActionsOblyon
 		$this->resprints	= $out;
 		return 0;
 	}
-	// InfraS add end
->>>>>>> Stashed changes
-    /*
-	public function addHtmlHeader($parameters){
-		global $conf;
-
-		$style = "<style id='oblyon_custom_css'>";
-		if (getDolGlobalString('OBLYON_CUSTOM_CSS')){
-			$style .= getDolGlobalString('OBLYON_CUSTOM_CSS');
-		}
-		$style .= "</style>";
-		
-		$this->resprints = $style;
-		return 0;
-	}
-    */
 }

@@ -297,7 +297,7 @@ function _createStatusBadgeCss($statusName, $statusVarNamePrefix = '', $commentL
 		}
 		print "}\n";
 
-		// InfraS add begin : style des badges de statut (OBLYON_BADGE_STYLE, 3.8.0), ecrit apres les regles d'origine du statut (memes selecteurs + !important) :
+		// style des badges de statut (OBLYON_BADGE_STYLE, 3.8.0), ecrit apres les regles d'origine du statut (memes selecteurs + !important) :
 		// outline = fond des lignes, cadre 1 px et texte de la couleur du statut (les statuts "bordure seule" d'origine gardent leur texte) ; dot = ni fond ni cadre,
 		// texte des lignes (graisse 500) precede d'un disque de 8 px (10 px dans le bandeau de fiche) de la couleur du statut, dessine par ::before
 		global $oblyon_badge_style;
@@ -317,19 +317,17 @@ function _createStatusBadgeCss($statusName, $statusVarNamePrefix = '', $commentL
 			print "    background-color: ".$thisBadgeBorderColor.";\n";
 			print "}\n";
 		}
-		// InfraS add end
 	}
 }
 ?>
 <?php if ($oblyon_badge_style == 'outline') { ?>
-/* InfraS add begin : badges de statut "contour" (OBLYON_BADGE_STYLE = outline, 3.8.0) : structure commune (les couleurs sont par statut ci-dessus) */
+/* badges de statut "contour" (OBLYON_BADGE_STYLE = outline, 3.8.0) : structure commune (les couleurs sont par statut ci-dessus) */
 .badge-status {
 	font-weight: 600 !important;
 	box-sizing: border-box;
 }
-/* InfraS add end */
 <?php } elseif ($oblyon_badge_style == 'dot') { ?>
-/* InfraS add begin : badges de statut "point + texte" (OBLYON_BADGE_STYLE = dot, 3.8.0) : structure commune, disque de 8 px aligne sur le texte, 10 px dans le bandeau de fiche */
+/* badges de statut "point + texte" (OBLYON_BADGE_STYLE = dot, 3.8.0) : structure commune, disque de 8 px aligne sur le texte, 10 px dans le bandeau de fiche */
 .badge-status {
 	position: relative;
 	padding-left: 1.1em !important;
@@ -357,10 +355,9 @@ function _createStatusBadgeCss($statusName, $statusVarNamePrefix = '', $commentL
 	height: 10px;
 	margin-top: -5px;
 }
-/* InfraS add end */
 <?php } ?>
 <?php if ($oblyon_status_pulse) { ?>
-/* InfraS add begin : pulsation du statut de la fiche ouverte (OBLYON_STATUS_PULSE, 3.8.0) : le statut du bandeau de reference (div.statusref) va et vient entre
+/* pulsation du statut de la fiche ouverte (OBLYON_STATUS_PULSE, 3.8.0) : le statut du bandeau de reference (div.statusref) va et vient entre
    pleine opacite et 55 % en 2,4 s, meme couleur, sans changement de taille ; en pause au survol (lecture) ; jamais dans les listes ; coupee quand le poste demande
    moins d'animations. Style "point + texte" : seul le disque pulse, le libelle reste stable ; statuts en icones : la pastille image pulse */
 @keyframes oblyon-status-pulse {
@@ -383,5 +380,4 @@ function _createStatusBadgeCss($statusName, $statusVarNamePrefix = '', $commentL
 }
 /* pas de coupure prefers-reduced-motion ici : l'option "Animations" (OBLYON_MOTION, lot 6) decide pour tout le theme, avec un reglage visible ;
    une coupure silencieuse par le seul reglage du poste faisait croire que l'option ne fonctionnait pas */
-/* InfraS add end */
 <?php } ?>

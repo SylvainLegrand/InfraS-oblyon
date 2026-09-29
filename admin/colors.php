@@ -120,7 +120,7 @@ $listcolor	= array('top'		=> array('OBLYON_COLOR_TOPMENU_BCKGRD',
 										'OBLYON_COLOR_LEFTMENU_TXT_ACTIVE',
 										'OBLYON_COLOR_LEFTMENU_TXT_HOVER',
 										),
-					'button'	=> oblyon_button_colors_all(),	// InfraS change 3.8.0 : familles action / suppression / formulaire x fond, texte, bordure, survol (oblyon_button_families()) ; les styles Contour / Doux ont leur propre jeu FLAT_*
+					'button'	=> oblyon_button_colors_all(),	// familles action / suppression / formulaire x fond, texte, bordure, survol (oblyon_button_families()) ; les styles Contour / Doux ont leur propre jeu FLAT_*
 					'message'	=> array('OBLYON_COLOR_INFO_BORDER',
 										'OBLYON_COLOR_INFO_BCKGRD',
 										'OBLYON_COLOR_INFO_TEXT',
@@ -155,20 +155,20 @@ $listcolor	= array('top'		=> array('OBLYON_COLOR_TOPMENU_BCKGRD',
 																				'THEME_ELDY_TEXTTITLENOTAB',
 																				'THEME_ELDY_TOPBORDER_TITLE1',
 																				'THEME_ELDY_BACKTITLE1',
-																				'OBLYON_COLOR_LISTHEAD_FLAT_BCKGRD',	// InfraS add begin : en-tetes de liste plats (3.8.0), affichees seulement quand OBLYON_LIST_HEADER_STYLE = flat (oblyon_tab_color_visible)
+																				'OBLYON_COLOR_LISTHEAD_FLAT_BCKGRD',	// en-tetes de liste plats (3.8.0), affichees seulement quand OBLYON_LIST_HEADER_STYLE = flat (oblyon_tab_color_visible)
 																				'OBLYON_COLOR_LISTHEAD_FLAT_TXT',
 																				'OBLYON_COLOR_LISTHEAD_FLAT_LINE',
-																				'OBLYON_COLOR_LISTHEAD_FLAT_SEL'	// InfraS add end
+																				'OBLYON_COLOR_LISTHEAD_FLAT_SEL'
 																				),
 										'OblyonColorGrpTabs'			=> array('THEME_ELDY_BACKTABACTIVE',	// boites (rendu d'origine) ; chaque style d'onglets n'affiche que ses couleurs : oblyon_tab_color_visible() (3.8.0)
 																				'THEME_ELDY_BACKTABCARD1',	// InfraS add : fond de l'onglet actif d'une fiche, jusqu'ici absent de l'onglet (restait blanc dans un preset sombre)
 																				'OBLYON_COLOR_TEXTTABACTIVE',
-																				'OBLYON_COLOR_TAB_PILL_BCKGRD',	// InfraS add begin : onglets en pilules (3.8.0)
+																				'OBLYON_COLOR_TAB_PILL_BCKGRD',	// onglets en pilules (3.8.0)
 																				'OBLYON_COLOR_TAB_PILL_TXT',
 																				'OBLYON_COLOR_TAB_PILL_BORDER',
 																				'OBLYON_COLOR_TAB_UNDER_BAND',	// onglets soulignes (3.8.0)
 																				'OBLYON_COLOR_TAB_UNDER_TXT',
-																				'OBLYON_COLOR_TAB_UNDER_LINE'	// InfraS add end
+																				'OBLYON_COLOR_TAB_UNDER_LINE'
 																				),
 										'OblyonColorGrpLines'			=> array('OBLYON_COLOR_BLINE',
 																				'OBLYON_COLOR_FLINE',
@@ -286,12 +286,12 @@ if (preg_match('/update_(.*)/', $action, $reg)) {
 	foreach ($list[$confkey] as $constname) {
 		$result	= dolibarr_set_const($db, $constname, GETPOST($constname, 'alpha'),	'chaine', 0, 'Oblyon module', $conf->entity);
 	}
-	$btnauto	= oblyon_button_auto_values(new User($db));	// InfraS add : couleurs de boutons automatiques de l'INSTANCE (utilisateur sans id : jamais les couleurs personnelles de l'admin), calculees avant toute ecriture : une couleur postee identique a la valeur affichee reste automatique ('#')
+	$btnauto	= oblyon_button_auto_values(new User($db));	// couleurs de boutons automatiques de l'INSTANCE (utilisateur sans id : jamais les couleurs personnelles de l'admin), calculees avant toute ecriture : une couleur postee identique a la valeur affichee reste automatique ('#')
 	foreach ($listcolor as $list) {
 		array_walk_recursive($list, function ($constname) use ($db, $conf, &$result, $btnauto) {
-			if (! GETPOSTISSET($constname))	return;	// InfraS add : champ non affiche (ex. couleurs des pilules hors style "pills", bordure de la colonne d'actions) : valeur en base conservee au lieu d'etre remplacee par '#'
+			if (! GETPOSTISSET($constname))	return;	// champ non affiche (ex. couleurs des pilules hors style "pills", bordure de la colonne d'actions) : valeur en base conservee au lieu d'etre remplacee par '#'
 			$value	= '#'.GETPOST($constname, 'alpha');
-			if (isset($btnauto[$constname]) && strtoupper($value) === $btnauto[$constname])	$value	= '#';	// InfraS add : non modifiee -> suit toujours le style et les couleurs de base
+			if (isset($btnauto[$constname]) && strtoupper($value) === $btnauto[$constname])	$value	= '#';	// non modifiee -> suit toujours le style et les couleurs de base
 			$result	= dolibarr_set_const($db, $constname, $value,	'chaine', 0, 'Oblyon module', $conf->entity);
 		});
 	}
@@ -375,7 +375,7 @@ print '<form action = "'.dol_escape_htmltag($_SERVER['PHP_SELF']).'" method = "P
 		}
 	}
 	// button
-	// InfraS change begin 3.8.0 : une sous-section par famille (boutons d'action, bouton Supprimer, boutons de formulaire si couleurs propres), les cinq roles
+	// une sous-section par famille (boutons d'action, bouton Supprimer, boutons de formulaire si couleurs propres), les cinq roles
 	// (les styles Contour / Doux ont leur propre jeu de constantes, cf. oblyon_button_families()) ; chaque champ montre la couleur reellement appliquee
 	// (oblyon_button_effective_colors()) : une couleur non modifiee reste automatique a l'enregistrement (cf. action update_), aide en infobulle sur le titre de chaque famille
 	$metas		= array(array(5), 'Buttons');
@@ -390,7 +390,6 @@ print '<form action = "'.dol_escape_htmltag($_SERVER['PHP_SELF']).'" method = "P
 			oblyon_print_input($key, 'input', '&nbsp;&nbsp;&nbsp;'.$langs->trans('OblyonBtnRole'.ucfirst(str_replace('_', '', ucwords($role, '_')))), '', $metas, 4, 1);
 		}
 	}
-	// InfraS change end
 	// message
 	$metas		= array(array(5), 'Messages');
 	oblyon_print_liste_titre($metas);
@@ -408,7 +407,7 @@ print '<form action = "'.dol_escape_htmltag($_SERVER['PHP_SELF']).'" method = "P
 			if ($key == 'OBLYON_COLOR_BORDER_ACTIONCOLUMN' && !getDolGlobalString('FIX_STICKY_COLUMN_FIRST') && !getDolGlobalString('FIX_STICKY_COLUMN_LAST')) {
 				continue;
 			}
-			if (! oblyon_tab_color_visible($key)) {	// InfraS add : groupe Onglets : seulement les couleurs du style d'onglets choisi (3.8.0)
+			if (! oblyon_tab_color_visible($key)) {	// groupe Onglets : seulement les couleurs du style d'onglets choisi (3.8.0)
 				continue;
 			}
 			$metas	= array('type' => 'text', 'class' => 'flat quatrevingtpercent color action');
