@@ -120,6 +120,7 @@ class ActionsOblyon
 	public function printTopRightMenu($parameters, &$object, &$action, $hookmanager)
 	{
 		global $conf, $langs, $user;
+
 		if (empty($user->id) || empty($conf->use_javascript_ajax) || GETPOST('optioncss', 'aZ09') == 'print') {
 			return 0;
 		}
