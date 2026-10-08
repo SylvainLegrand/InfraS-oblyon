@@ -4,21 +4,21 @@
 ![DPP](https://www.dolibiz.com/wp-content/uploads/2017/09/dpp.png "Inovea Conseil Dolibarr Preferred Partner")
 <a href="https://www.dolibiz.com/support/" target="_blank">![Support](https://www.dolibiz.com/wp-content/uploads/2017/09/support.png "Support")</a>
 
-Ce module a Ã©tÃ© dÃ©veloppÃ© par Inovea Conseil - votre partenaire Dolibarr pour tout dÃ©veloppement de modules sur-mesure, de la formation et de l'hÃ©bergement Dolibarr.
+Ce module a été développé par Inovea Conseil - votre partenaire Dolibarr pour tout développement de modules sur-mesure, de la formation et de l'hébergement Dolibarr.
 * Retrouvez la documentation de votre module sur <a href="https://www.dolibiz.com/support/" target="_blank">notre support en ligne</a>
-* Vous pourrez dÃ©couvrir nos autres modules et services sur <a href="https://www.dolibiz.com" target="_blank">notre site dolibiz.com</a>
+* Vous pourrez découvrir nos autres modules et services sur <a href="https://www.dolibiz.com" target="_blank">notre site dolibiz.com</a>
 
 ## Comment utiliser
 
-Pour utiliser le thÃ¨me, vous devez **activer** le module. Lors de l'activation du module, le thÃ¨me sera automatiquement activÃ©.
+Pour utiliser le thème, vous devez **activer** le module. Lors de l'activation du module, le thème sera automatiquement activé.
 
 **Avertissements** :
-* L'activation du thÃ¨me seul entraÃ®nera des comportements inattendus !
-* Changer le thÃ¨me dans Dolibarr dans les paramÃ¨tres du profil de l'utilisateur alors que le module Oblyon est actif entraÃ®nera Ã©galement des comportements inattendus !
+* L'activation du thème seul entraînera des comportements inattendus !
+* Changer le thème dans Dolibarr dans les paramètres du profil de l'utilisateur alors que le module Oblyon est actif entraînera également des comportements inattendus !
 
 ## Questions / Demandes
 
-Les idÃ©es et les suggestions sont les bienvenues. N'hÃ©sitez pas Ã  crÃ©er un problÃ¨me ou un PR sur Github en utilisant [github.com/aspangaro/oblyon](https://github.com/aspangaro/oblyon).
+Les idées et les suggestions sont les bienvenues. N'hésitez pas à créer un problème ou un PR sur Github en utilisant [github.com/aspangaro/oblyon](https://github.com/aspangaro/oblyon).
 
 Pour tout besoin, vous pouvez nous contacter : <a href="mailto:info@inovea-conseil.com">info@inovea-conseil.com</a>
 
