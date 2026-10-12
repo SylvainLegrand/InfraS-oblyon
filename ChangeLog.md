@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### [3.9.1] - Compatibility 18.0.x - 24.0.x (2026/10/12)
+### Fixed
+- Left menu Tools > Export on Dolibarr 22: the entry still pointed to exports/index.php, a page removed by Dolibarr 22 (Import and Export merged into imports/index.php), so the link answered a 404 "Not Found". The merged Import / Export entry was only served from Dolibarr 23: it is now served from 22.0 (core/menus/standard/oblyon.lib.php). Reported on the alarmexpo instance.
 ### [3.9.0] - Compatibility 18.0.x - 24.0.x (2026/10/08)
 ### Fixed
 - Point of sale (TakePOS) on a phone: with the mobile layout (OBLYON_MOBILE_LAYOUT), the two rules that keep the object lines table of the cards 640px wide and its description column 320px wide also applied to the TakePOS ticket (table#tablelines), which then scrolled sideways inside its column. They are cancelled on the point of sale screen (body.bodytakepos), whatever the point of sale theme (themeoblyon/modules/takepos.inc.php)
