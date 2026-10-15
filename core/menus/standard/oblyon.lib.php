@@ -2333,7 +2333,7 @@ function print_left_oblyon_menu($db, $menu_array_before, $menu_array_after, &$ta
 				$newmenu->add("/comm/mailing/list.php?leftmenu=mailing", $titlelist, 1, $user->hasRight('mailing', 'lire'));
 			}
 
-			if ((float) DOL_VERSION >= 23.0) {
+			if ((float) DOL_VERSION >= 22.0) {	// InfraS change : la page exports/index.php n'existe plus depuis Dolibarr 22 (Import et Export fusionnes dans imports/index.php), pas 23
 				$title = "ImportExportArea";
 				if (isModEnabled('import') && !isModEnabled('export')) {
 					$title = "FormatedImport";
