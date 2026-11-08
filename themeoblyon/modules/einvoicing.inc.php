@@ -14,4 +14,11 @@
 .arearef .statusref .einv-banner-badge, .arearefnobottom .statusref .einv-banner-badge {
 	margin-top: 6px;
 }
+/* Module einvoicing (2026-10) : fenetre de pre-import des produits introuvables (dialogue jQuery UI #einvpi-dialog).
+   Avec FIX_STICKY_HEADER_CARD, les th de tr.liste_titre sont collants (top 40/54px) et recouvrent les premieres lignes
+   du tableau dans le dialogue : on les remet dans le flux. */
+.einvpi-dialog tr.liste_titre th, .einvpi-dialog tr.liste_titre td {
+	position: static !important;
+	top: unset !important;
+}
 <?php } ?>
