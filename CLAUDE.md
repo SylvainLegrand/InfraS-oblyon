@@ -91,7 +91,8 @@ htdocs/custom/oblyon/
 ├── presets/                   # Presets du module (3.6.0) : green, dark, blue, night, light (.json) + accessible.json (scope user : onglet utilisateur seulement)
 ├── sql/
 │   ├── data.sql               # Constantes initiales (~200 INSERT, exhaustif ; preset « Oblyon Blue » par défaut)
-│   └── update_3.2.0_oblyon_to_eldy.sql  # Migration OBLYON_* → THEME_ELDY_* (manuelle, à l'upgrade)
+│   ├── migration_3.2.0_oblyon_to_eldy.sql  # Migration OBLYON_* → THEME_ELDY_* : manuelle, une seule fois, après une mise à jour depuis < 3.2.0 (InfraS 2026-11)
+│   └── update_3.2.0_oblyon_to_eldy.sql  # Neutralisé, sans requête (InfraS 2026-11) : gardé pour remplacer l'ancienne version au déploiement
 ├── user/
 │   └── colors.php             # Onglet « Couleurs » de la fiche utilisateur (3.6.0) : couleurs personnelles (llx_user_param)
 └── themeoblyon/               # Répertoire du thème CSS
@@ -180,7 +181,7 @@ Dans `core/modules/modOblyon.class.php` :
 - Sauvegarde de `MAIN_MENU_INVERT` pour restauration future
 - Nettoyage des constantes de menus forcés (`MAIN_MENU*_FORCED`)
 - Nettoyage des constantes `THEME_ELDY_*` (couleurs Dolibarr)
-- Nettoyage des constantes FontAwesome (`MAIN_FONTAWESOME_*`)
+- Nettoyage des constantes FontAwesome (`MAIN_FONTAWESOME_*`) de l'entité désactivée seulement (InfraS 2026-11, voir « Dernières mises à jour »)
 
 ## Fonctionnement principal (Core behavior)
 
@@ -235,8 +236,8 @@ Le module ne crée aucune table SQL propre. Toute la configuration est stockée 
 
 Fichiers SQL (`sql/`) :
 
-- `data.sql` : constantes initiales (~200), **exhaustif** (toutes les constantes lues par le thème sont semées) ; les couleurs par défaut correspondent au preset **« Oblyon Blue »**. Organisé en sections commentées (Menus, Couleurs, Tableau de bord, Options, Réglages complémentaires). `__ENTITY__` est remplacé par l'entité courante à l'exécution (`run_sql`). Ne sème qu'à l'installation (INSERT simples, doublons tolérés).
-- `update_3.2.0_oblyon_to_eldy.sql` : **migration manuelle** (préfixe `update_` → non exécutée par `_load_tables`) recopiant les anciennes constantes `OBLYON_*` vers les nouvelles `THEME_ELDY_*` — voir « Migration de constantes (oblyon → eldy) ».
+- `data.sql` : constantes initiales (~200), **exhaustif** (toutes les constantes lues par le thème sont semées) ; les couleurs par défaut correspondent au preset **« Oblyon Blue »**. Organisé en sections commentées (Menus, Couleurs, Tableau de bord, Options, Réglages complémentaires). `__ENTITY__` est remplacé par l'entité courante à l'exécution (`run_sql`). Rejoué à chaque activation : les INSERT simples sont sans effet quand la ligne existe (doublons tolérés), sauf `OBLYON_FONT_FAMILY`, remise à Arial à chaque fois (`ON DUPLICATE KEY UPDATE`) (précision InfraS 2026-11).
+- `migration_3.2.0_oblyon_to_eldy.sql` : migration **manuelle** des anciennes constantes `OBLYON_*` vers les nouvelles `THEME_ELDY_*`, à lancer une seule fois après la mise à jour d'une instance depuis une version < 3.2.0. `update_3.2.0_oblyon_to_eldy.sql` est neutralisé (sans requête), car `_load_tables` rejoue tout fichier préfixé `update` à chaque activation, après `data.sql` (correctif InfraS 2026-11). Voir « Migration de constantes (oblyon → eldy) ».
 
 Le mécanisme de backup/restore sauvegarde/restaure les constantes du module dans `DOL_DATA_ROOT/<entity>/oblyon/sql/update.<entity>` ; la sauvegarde combine des préfixes LIKE et la liste exhaustive de `data.sql` (voir Notes techniques).
 
@@ -459,6 +460,11 @@ Si modification SQL / descripteur / thème CSS / menus / constantes :
 - (2026-07) Règle CSS ciblée `.ui-autocomplete .ui-state-active` : applique aussi `OBLYON_COLOR_AUTOCOMPLETE_*` à l'**autocomplétion jQuery UI** (`PRODUIT_USE_SEARCH_TO_SELECT`), sans impacter les autres états `.ui-state-active`
 - (2026-07) Nouvelles options couleur multi-select select2 (5 presets + data.sql + `oblyon_bkup_module()` via préfixe `OBLYON_%`) : `OBLYON_COLOR_RESULT_*` = **étiquettes sélectionnées dans le champ** (`.select2-selection__choice`, ex-fond info-box `var(--color1BckgrdInfobox)` sans couleur de texte) ; `OBLYON_COLOR_CHIP_*` = **options déjà sélectionnées dans la liste déroulante** (`.select2-results__option[aria-selected=true]`, remplace le gris `#ddd` de select2). Noms contre-intuitifs conservés (RESULT→champ, CHIP→liste) pour ne pas orpheliner les valeurs déjà en base ; mapping inversé après retour utilisateur, options non cochées de la liste laissées au rendu par défaut
 - (2026-07) Fix fallback FontAwesome à la désactivation : `remove()` ne supprimait que `MAIN_FONTAWESOME_ICON_STYLE`/`_WEIGHT` (à `$conf->entity`), laissant `_DIRECTORY` et `_FAMILY` orphelines → le pack FA choisi (ex. `fontawesome-6p` Pro) restait actif au lieu de revenir au défaut natif du core (`/theme/common/fontawesome-5`, `fas`, `Font Awesome 5 Free`). Corrigé : suppression des **4** constantes `MAIN_FONTAWESOME_*` sur **toutes les entités** (`dolibarr_del_const(..., -1)`, le filtre entité n'est appliqué que si `entity >= 0`). NB : `init()` pose volontairement `_DIRECTORY` (et `style.css.php` `_FAMILY`) à l'**entité 0** = défaut global, écrasé par l'override par entité d'`icons.php` (précédence `conf.class.php` : `entity IN (0, courante) ORDER BY entity`) — ne pas basculer `init()` sur `$conf->entity` sous peine d'écraser le choix admin à chaque réactivation
+- (2026-11, InfraS) Multi-entité et cache, quatre défauts corrigés :
+  - `remove()` ne supprime plus les 4 `MAIN_FONTAWESOME_*` que dans l'**entité désactivée** (`$conf->entity`). Le `-1` du correctif 2026-07 effaçait aussi le choix d'icônes de toutes les **autres** entités à chaque désactivation. L'entité désactivée retombe sur les lignes de l'entité 0 : `init()` y pose le pack `fontawesome-N` gratuit le plus récent (numéro à un chiffre), et `style.css.php` sa famille. Le cas 2026-07 reste couvert. Ne pas revenir à `-1`.
+  - `admin/icons.php` incrémente `MAIN_IHM_PARAMS_REV` à l'enregistrement. La famille et la graisse des icônes sont dans la feuille du thème. Sans nouvelle révision, le navigateur garde l'ancienne feuille sans limite de durée, car la revalidation reçoit 304 : le `Last-Modified` posé par `session_cache_limiter('public')` est la date du fichier `style.css.php`.
+  - `themeoblyon/core.inc.php` et sa copie `theme/oblyon/core.inc.php` : `.a-filter:before` et `.a-mesure:before` prennent `var(--fontawesomeFamily)` et `var(--fontawesomeWeight)`, au lieu de « Font Awesome 5 Free » écrit en dur, absent des packs Font Awesome 6.
+  - Migration 3.2.0 : `sql/update_3.2.0_oblyon_to_eldy.sql` est neutralisé, sans requête. Il est gardé pour qu'un déploiement qui ne supprime pas les fichiers remplace l'ancienne version. Sa migration passe dans `sql/migration_3.2.0_oblyon_to_eldy.sql`, manuelle. `_load_tables` rejouait le fichier `update_` à chaque activation, après `data.sql` : son `ON DUPLICATE KEY UPDATE` remettait, dans les entités non activées, la police, la taille, la barre collante et 3 couleurs (`THEME_*`) aux valeurs des anciennes constantes `OBLYON_*`. L'entité activée était remise ensuite par `oblyon_restore_module()`. Un `INSERT IGNORE` ne suffisait pas : il ne reprend rien dans l'entité activée, où `data.sql` vient de créer les `THEME_*`.
 - (2026-07) Fix menu inversé (`MAIN_MENU_INVERT` + `THEME_STICKY_TOPMENU`) : quand la barre haute `#tmenu_tooltipinvert` (`position: fixed`) déborde sur plusieurs lignes, le contenu (`#id-left`, `#id-right`→`.fiche`) gardait un `padding-top` codé en dur (40/52px) → haut du contenu masqué. Correctif **JS** dans `js/oblyon.js` : recalcul du `padding-top` de `#id-left`/`#id-right` selon la hauteur réelle de la barre (au chargement + `load` + `resize`). Le CSS n'est pas touché (clipper la barre est exclu : `overflow` couperait aussi les sous-menus `.sec-nav__sub-list` en `position: absolute` qui débordent sous la barre)
 - `3.2.0` (2026-06) : mode tactile des menus (tap-to-toggle) — corrige le repli incontrôlé des dropdowns sur écran tactile (dépendance au `:hover`). Auto-détection + option `OBLYON_TOUCH_MENU` ; nouveaux fichiers `themeoblyon/touchmenu.inc.php` et `js/oblyon.js`
 - `3.1.0` (2025-11) : compatibilité Dolibarr v21/v22/v23
@@ -476,7 +482,7 @@ Si modification SQL / descripteur / thème CSS / menus / constantes :
 
 ### Déploiement d'une nouvelle version : réactiver le module (version du JS et cache long)
 
-L'adresse du script du module est figée dans la constante `MAIN_MODULE_OBLYON_JS` (`/oblyon/js/oblyon.js?v=<version>`), écrite à l'**activation** du module. Sur les instances dont le vhost met les `.js` en cache un mois (`mod_expires`) et/ou qui sont derrière Cloudflare (kytom*), déposer les fichiers d'une nouvelle version sans réactiver le module laisse l'ancienne adresse dans les pages : les navigateurs et le CDN continuent de servir l'ancien `oblyon.js` (une fonctionnalité JS nouvelle, ex. centre de notifications ou avatar, reste muette sans aucune erreur). Après tout déploiement : désactiver / réactiver le module (ou `activateModule('modOblyon')` en CLI), ce qui met aussi à jour les constantes de `data.sql` ; la feuille `style.css.php` n'a pas ce problème (`?revision=` piloté par `MAIN_IHM_PARAMS_REV`, cache 3 h). Audit 2026-09-22 : plateforme kytom (Dolibarr 22.0.5, PHP 8.4, ModSecurity, CSP en rapport seul, `open_basedir`, Cloudflare) sans autre point bloquant pour la 3.8.0.
+L'adresse du script du module est figée dans la constante `MAIN_MODULE_OBLYON_JS` (`/oblyon/js/oblyon.js?v=<version>`), écrite à l'**activation** du module. Sur les instances dont le vhost met les `.js` en cache un mois (`mod_expires`) et/ou qui sont derrière Cloudflare (kytom*), déposer les fichiers d'une nouvelle version sans réactiver le module laisse l'ancienne adresse dans les pages : les navigateurs et le CDN continuent de servir l'ancien `oblyon.js` (une fonctionnalité JS nouvelle, ex. centre de notifications ou avatar, reste muette sans aucune erreur). Après tout déploiement : désactiver / réactiver le module (ou `activateModule('modOblyon')` en CLI, après une désactivation dans la même entité : sinon `init()` restaure une sauvegarde `update.<entité>` peut-être ancienne — précision InfraS 2026-11), ce qui met aussi à jour les constantes de `data.sql` ; la feuille `style.css.php` n'a pas ce problème (`?revision=` piloté par `MAIN_IHM_PARAMS_REV` : cache 3 h, puis revalidation en 304 tant que la révision ne change pas ; toute écriture d'une constante lue par la feuille doit donc incrémenter la révision — précision InfraS 2026-11). Audit 2026-09-22 : plateforme kytom (Dolibarr 22.0.5, PHP 8.4, ModSecurity, CSP en rapport seul, `open_basedir`, Cloudflare) sans autre point bloquant pour la 3.8.0.
 
 ### Couleurs par utilisateur (3.6.0)
 
@@ -578,7 +584,7 @@ Certaines constantes propres au thème ont été remplacées par les constantes 
 | `OBLYON_DISABLE_KANBAN_VIEW_IN_LIST` | `DISABLE_KANBAN_VIEW_IN_LIST` | masquage vue kanban |
 
 - Le code lit désormais les constantes de droite (repli sur les défauts de `theme_vars.inc.php`).
-- `sql/update_3.2.0_oblyon_to_eldy.sql` recopie l'ancienne valeur vers la nouvelle à l'upgrade d'une instance existante (**manuel** : `mariadb … alarmexpo < sql/update_3.2.0_oblyon_to_eldy.sql`).
+- `sql/migration_3.2.0_oblyon_to_eldy.sql` recopie l'ancienne valeur vers la nouvelle à l'upgrade d'une instance existante depuis une version < 3.2.0. Migration **manuelle**, une seule fois, après la réactivation du module : `mariadb … <base> < sql/migration_3.2.0_oblyon_to_eldy.sql`. `sql/update_3.2.0_oblyon_to_eldy.sql` est neutralisé (correctif InfraS 2026-11).
 - La constante kanban est migrée automatiquement par `init()` et à l'ouverture de `admin/options.php`.
 
 ### CSS des boutons (consolidé dans `btn.inc.php`)
@@ -604,7 +610,7 @@ Toutes les pages d'administration suivent le même pattern :
 2. Contrôle d'accès : `if (!$user->admin) accessforbidden();`
 3. Actions : `GETPOST('action', 'alpha')` avec support backup/restore, on/off (`set_*`), update (`update_*`)
 4. Whitelist sur les constantes modifiables : `preg_match('/^(OBLYON_|THEME_|MAIN_|FIX_|DISABLE_)/', $confkey)`
-5. Reset du cache : `$_SESSION['dol_resetcache']`
+5. Reset du cache : champ caché `dol_resetcache=1` dans le formulaire (lu par `main.inc.php`, qui incrémente `MAIN_IHM_PARAMS_REV`) ou incrément explicite de `MAIN_IHM_PARAMS_REV` ; `$_SESSION['dol_resetcache']` n'a aucun effet en 22 (précision InfraS 2026-11)
 6. Rendu : `llxHeader()`, onglets via `oblyon_admin_prepare_head()`, `llxFooter()`
 
 Cas particulier de `admin/colors.php` (3.6.0) : un bloc d'actions presets est traité **avant** le bloc générique `update_` — `download_preset` en GET (jeton, envoie le fichier JSON puis `exit`), puis `apply_preset`, `save_preset` (mise à jour), `saveas_preset`, `delete_preset`, `import_preset` en POST + jeton, chacun suivi de `setEventMessages()` et d'une redirection vers la page (motif Post/Redirect/Get : F5 ne rejoue pas l'action). Les cartes et les deux formulaires repliés (`<details>`) sont imprimés par `oblyon_print_preset_cards()` / `oblyon_print_preset_forms()` au-dessus du formulaire des couleurs. Le tableau `$listtheme` et le cas `theme` du bloc `update_` n'existent plus.

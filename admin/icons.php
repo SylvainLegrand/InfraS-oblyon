@@ -80,6 +80,7 @@ if (GETPOST('select_fa', 'alpha')) {
         dolibarr_set_const($db, 'MAIN_FONTAWESOME_FAMILY', $selected_family, 'chaine', 0, '', $conf->entity);
         dolibarr_set_const($db, 'MAIN_FONTAWESOME_ICON_STYLE', $selected_style, 'chaine', 0, '', $conf->entity);
         dolibarr_set_const($db, 'MAIN_FONTAWESOME_WEIGHT', $weight, 'chaine', 0, '', $conf->entity);
+        dolibarr_set_const($db, 'MAIN_IHM_PARAMS_REV', getDolGlobalInt('MAIN_IHM_PARAMS_REV') + 1, 'chaine', 0, '', $conf->entity);	// InfraS add : nouvelle revision de la feuille du theme (--fontawesomeFamily, --fontawesomeWeight), sinon les navigateurs gardent l'ancienne
 
         setEventMessages($langs->trans("FontAwesomeSuccessMessage", $selected_family, $selected_style, $weight, $full_dir_path), null, 'mesgs');
         $_SESSION['dol_resetcache']	= dol_print_date(dol_now(), 'dayhourlog');	// Reset cache

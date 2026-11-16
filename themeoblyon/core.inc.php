@@ -1489,8 +1489,10 @@ div.divsearchfield {
 	content: "\f080";
 }
 .a-filter:before, .a-mesure:before {
-	font-family: "Font Awesome 5 Free";
-	font-weight: 600;
+	/* InfraS change begin : famille et graisse du pack d'icones choisi (onglet Icones) ; "Font Awesome 5 Free" en dur n'existe pas dans le pack Font Awesome 6 Pro */
+	font-family: var(--fontawesomeFamily);
+	font-weight: var(--fontawesomeWeight);
+	/* InfraS change end */
 	padding-right: 5px;
 	padding-left: 5px;
 }

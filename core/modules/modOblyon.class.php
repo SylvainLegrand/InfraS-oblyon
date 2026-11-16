@@ -220,10 +220,12 @@
 			dolibarr_del_const($this->db,'THEME_ELDY_TEXTLINK', $conf->entity);
 			dolibarr_del_const($this->db,'THEME_ELDY_ENABLE_PERSONALIZED', $conf->entity);
 
-			dolibarr_del_const($this->db,'MAIN_FONTAWESOME_DIRECTORY', -1);
-			dolibarr_del_const($this->db,'MAIN_FONTAWESOME_FAMILY', -1);
-			dolibarr_del_const($this->db,'MAIN_FONTAWESOME_ICON_STYLE', -1);
-			dolibarr_del_const($this->db,'MAIN_FONTAWESOME_WEIGHT', -1);
+			// InfraS change begin : entite desactivee seulement (le -1 effacait le choix d'icones de toutes les entites a chaque desactivation) ; l'entite desactivee retombe sur les lignes de l'entite 0 (init() : pack fontawesome-N gratuit le plus recent ; style.css.php : sa famille)
+			dolibarr_del_const($this->db,'MAIN_FONTAWESOME_DIRECTORY', $conf->entity);
+			dolibarr_del_const($this->db,'MAIN_FONTAWESOME_FAMILY', $conf->entity);
+			dolibarr_del_const($this->db,'MAIN_FONTAWESOME_ICON_STYLE', $conf->entity);
+			dolibarr_del_const($this->db,'MAIN_FONTAWESOME_WEIGHT', $conf->entity);
+			// InfraS change end
 			// Suppression du theme theme/oblyon : uniquement en version standard (absence de htdocs/VERSION ; en LTS ne pas y toucher)
 			if (! dol_is_file(DOL_DOCUMENT_ROOT.'/VERSION')) {
 				$destDir	= DOL_DOCUMENT_ROOT.'/theme/oblyon';
