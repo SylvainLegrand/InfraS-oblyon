@@ -21,7 +21,7 @@ Informations module (issues du code et du changelog local) :
 - Licence : GPL v3+
 - Compatibilité Dolibarr : `18.0.0` à `24.0.x`
 - Compatibilité PHP : `7.1` à `8.4`
-- Dernière version locale : `3.8.0` (2026-09, en cours : options d'interface, un lot par option)
+- Dernière version locale : `3.9.2` (2026-11 : postUpdate() pour la LTS)
 - Dépendances obligatoires : aucune
 - Conflits : `modQuickUX`
 - Emplacement : `htdocs/custom/oblyon/`
@@ -169,7 +169,11 @@ Dans `core/modules/modOblyon.class.php` :
 6. Activation du thème Oblyon (`MAIN_THEME` = `oblyon`)
 7. Restauration de `MAIN_MENU_INVERT` depuis sauvegarde
 8. Suppression de `OBLYON_SHOW_COMPNAME` (incompatible menu inversé)
-9. Migration de la constante kanban : `OBLYON_DISABLE_KANBAN_VIEW_IN_LIST` → `DISABLE_KANBAN_VIEW_IN_LIST`, puis suppression de l'ancienne
+9. Migrations de constantes déléguées à `postUpdate(0)` (kanban `OBLYON_DISABLE_KANBAN_VIEW_IN_LIST` vers `DISABLE_KANBAN_VIEW_IN_LIST` ; densité 3.8.0 `THEME_ELDY_USECOMOACTROW` vers `OBLYON_DENSITY`), voir ci-dessous
+
+### Mise à jour sans réactivation (`postUpdate($dryrun)`, InfraS 3.9.2)
+
+Appelée par `init()` et par le module dolinfras de la LTS (contrôles de build, entité par entité) après une mise à jour des fichiers : migrations de constantes d'`init()` (kanban, densité 3.8.0) puis `MAIN_FONTAWESOME_DIRECTORY` (entité 0) rétabli s'il désigne un répertoire absent. Idempotente, sans `remove()` ni copie du thème ; `$dryrun = 1` n'écrit rien ; retourne `array('status' => 'done'|'skipped'|'error', 'details' => ...)`. Toute nouvelle logique d'`init()` utile après une mise à jour va ici, sinon les instances LTS ne la reçoivent qu'à une vraie réactivation (contrôle des réactivations de dolinfras 18.11.0).
 
 ### Désactivation (Lifecycle : `remove()`)
 

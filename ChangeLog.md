@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### [3.9.2] - Compatibility 18.0.x - 24.0.x (2026/11/20)
+### Added
+- postUpdate() on the module descriptor, run by the dolinfras module of the Dolibarr LTS by InfraS after the module files are updated, entity by entity, without deactivating / reactivating the module: it replays the constant migrations of init() (kanban: OBLYON_DISABLE_KANBAN_VIEW_IN_LIST to DISABLE_KANBAN_VIEW_IN_LIST; 3.8.0 density: THEME_ELDY_USECOMOACTROW to OBLYON_DENSITY "comfortable") and restores MAIN_FONTAWESOME_DIRECTORY (entity 0) when it points to a missing directory. Idempotent: it never calls remove(), never copies the theme and leaves the other settings untouched. init() now runs the same migrations through postUpdate()
 ### [3.9.1] - Compatibility 18.0.x - 24.0.x (2026/10/12)
 ### Fixed
 - Left menu Tools > Export on Dolibarr 22: the entry still pointed to exports/index.php, a page removed by Dolibarr 22 (Import and Export merged into imports/index.php), so the link answered a 404 "Not Found". The merged Import / Export entry was only served from Dolibarr 23: it is now served from 22.0 (core/menus/standard/oblyon.lib.php). Reported on the alarmexpo instance.

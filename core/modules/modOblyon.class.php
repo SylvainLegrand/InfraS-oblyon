@@ -168,22 +168,77 @@
 			// Désactivé en menu inversé car provoque un chargement html dans la page style.css et empêche le chargement des variables css
 			dolibarr_del_const($this->db,'OBLYON_SHOW_COMPNAME', $conf->entity);
 
-			// Migration constante kanban : ancienne OBLYON_DISABLE_KANBAN_VIEW_IN_LIST -> DISABLE_KANBAN_VIEW_IN_LIST, puis suppression
-			if (getDolGlobalString('OBLYON_DISABLE_KANBAN_VIEW_IN_LIST')) {
-				if (!getDolGlobalString('DISABLE_KANBAN_VIEW_IN_LIST')) {
-					dolibarr_set_const($this->db, 'DISABLE_KANBAN_VIEW_IN_LIST', getDolGlobalString('OBLYON_DISABLE_KANBAN_VIEW_IN_LIST'), 'chaine', 0, 'Oblyon module', $conf->entity);
-				}
-				dolibarr_del_const($this->db, 'OBLYON_DISABLE_KANBAN_VIEW_IN_LIST', $conf->entity);
-			}
-			// migration 3.8.0 : "lignes de tableau plus espacees" (THEME_ELDY_USECOMOACTROW) -> densite "comfortable" (OBLYON_DENSITY), puis suppression (idem admin/options.php)
-			if (getDolGlobalString('THEME_ELDY_USECOMOACTROW')) {
-				if (getDolGlobalString('OBLYON_DENSITY', 'compact') == 'compact') {
-					dolibarr_set_const($this->db, 'OBLYON_DENSITY', 'comfortable', 'chaine', 0, 'Oblyon module', $conf->entity);
-				}
-				dolibarr_del_const($this->db, 'THEME_ELDY_USECOMOACTROW', $conf->entity);
-			}
+			// InfraS change begin : migrations de constantes (kanban, densité 3.8.0) partagées avec postUpdate(), que le module dolinfras de la LTS appelle aussi après une mise à jour des fichiers, sans réactivation
+			$this->postUpdate(0);
+			// InfraS change end
 			return $this->_init($sql, $options);
 		}
+
+		/************************************************
+		 * InfraS add begin
+		 * Mise à jour sans réactivation : appelée par init() et par le module dolinfras de la distribution LTS (contrôles de build,
+		 * entité par entité) après une mise à jour des fichiers. Rejoue les migrations de constantes d'init() : kanban
+		 * (OBLYON_DISABLE_KANBAN_VIEW_IN_LIST -> DISABLE_KANBAN_VIEW_IN_LIST) et densité 3.8.0 (THEME_ELDY_USECOMOACTROW ->
+		 * OBLYON_DENSITY "comfortable"), puis rétablit MAIN_FONTAWESOME_DIRECTORY (entité 0) s'il désigne un répertoire absent.
+		 * Sans remove(), sans copie du thème (livré par la LTS), sans toucher aux autres réglages. Idempotente.
+		 * @param		int		$dryrun		1 = aucune écriture, rapport seulement
+		 * @return		array				array('status' => 'done'|'skipped'|'error', 'details' => string)
+		************************************************/
+		public function postUpdate($dryrun = 0)
+		{
+			global $conf;
+
+			require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+			$done	= array();
+			$errors	= array();
+			// Migration constante kanban : ancienne OBLYON_DISABLE_KANBAN_VIEW_IN_LIST -> DISABLE_KANBAN_VIEW_IN_LIST, puis suppression
+			if (getDolGlobalString('OBLYON_DISABLE_KANBAN_VIEW_IN_LIST')) {
+				$done[]	= 'OBLYON_DISABLE_KANBAN_VIEW_IN_LIST -> DISABLE_KANBAN_VIEW_IN_LIST';
+				if (empty($dryrun)) {
+					if (!getDolGlobalString('DISABLE_KANBAN_VIEW_IN_LIST') && dolibarr_set_const($this->db, 'DISABLE_KANBAN_VIEW_IN_LIST', getDolGlobalString('OBLYON_DISABLE_KANBAN_VIEW_IN_LIST'), 'chaine', 0, 'Oblyon module', $conf->entity) < 0) {
+						$errors[]	= 'DISABLE_KANBAN_VIEW_IN_LIST';
+					} elseif (dolibarr_del_const($this->db, 'OBLYON_DISABLE_KANBAN_VIEW_IN_LIST', $conf->entity) < 0) {
+						$errors[]	= 'OBLYON_DISABLE_KANBAN_VIEW_IN_LIST';
+					}
+				}
+			}
+			// Migration 3.8.0 : "lignes de tableau plus espacees" (THEME_ELDY_USECOMOACTROW) -> densite "comfortable" (OBLYON_DENSITY), puis suppression (idem admin/options.php)
+			if (getDolGlobalString('THEME_ELDY_USECOMOACTROW')) {
+				$done[]	= 'THEME_ELDY_USECOMOACTROW -> OBLYON_DENSITY';
+				if (empty($dryrun)) {
+					if (getDolGlobalString('OBLYON_DENSITY', 'compact') == 'compact' && dolibarr_set_const($this->db, 'OBLYON_DENSITY', 'comfortable', 'chaine', 0, 'Oblyon module', $conf->entity) < 0) {
+						$errors[]	= 'OBLYON_DENSITY';
+					} elseif (dolibarr_del_const($this->db, 'THEME_ELDY_USECOMOACTROW', $conf->entity) < 0) {
+						$errors[]	= 'THEME_ELDY_USECOMOACTROW';
+					}
+				}
+			}
+			// Répertoire FontAwesome disparu (mise à jour du cœur) : pack fontawesome-N le plus récent, comme init()
+			$fadir	= getDolGlobalString('MAIN_FONTAWESOME_DIRECTORY');
+			if ($fadir === '' || !dol_is_dir(DOL_DOCUMENT_ROOT.$fadir)) {
+				$listFontawesome	= array();
+				foreach (dol_dir_list(DOL_DOCUMENT_ROOT.'/theme/common/', 'directories', 0, '^fontawesome-', null, 'name', SORT_ASC, 0, 0, '', 0) as $dir) {
+					if (!empty($dir['name']) && preg_match('/^fontawesome-([0-9])$/', $dir['name'], $reg)) {
+						$listFontawesome[$reg[1]]	= $dir['name'];
+					}
+				}
+				if (!empty($listFontawesome)) {
+					$fontawesome_directory	= '/theme/common/'.$listFontawesome[max(array_keys($listFontawesome))];
+					$done[]	= 'MAIN_FONTAWESOME_DIRECTORY '.($fadir === '' ? '(empty)' : $fadir).' -> '.$fontawesome_directory;
+					if (empty($dryrun) && dolibarr_set_const($this->db, 'MAIN_FONTAWESOME_DIRECTORY', $fontawesome_directory, 'chaine', 0, 'module Oblyon', 0) < 0) {
+						$errors[]	= 'MAIN_FONTAWESOME_DIRECTORY';
+					}
+				}
+			}
+			if (!empty($errors)) {
+				return array('status' => 'error', 'details' => 'not applied: '.implode(', ', $errors));
+			}
+			if (empty($done)) {
+				return array('status' => 'skipped', 'details' => 'nothing to migrate');
+			}
+			return array('status' => 'done', 'details' => (empty($dryrun) ? 'applied: ' : 'would apply: ').implode(' ; ', $done));
+		}
+		/* InfraS add end */
 
  		/************************************************
 		 * Function called when module is disabled.
