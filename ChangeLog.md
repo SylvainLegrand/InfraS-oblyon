@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### [3.9.3] - Compatibility 18.0.x - 24.0.x (2026/11/26)
+### Fixed
+- Sub-menus in flyouts (and in the mobile drawer): the menu entries added by modules (llx_menu) were evaluated with the leftmenu of the current page, so an entry whose condition reads $leftmenu (e.g. the sub-menus of einvoicing 1.5.0.9, preg_match('/^(einvoicing|all)/', $leftmenu)) was missing from the flyout everywhere but in its own section. The flyouts now read the module entries loaded once per page with leftmenu = 'all', like the hard coded entries (oblyon_flyout_tabmenu_all(), core/menus/standard/oblyon.lib.php)
+- einvoicing dashboard (einvoicingindex.php) with FIX_STICKY_HEADER_CARD: the sticky list headers moved down by 40/54px inside the scrolling body of the foldable sections and covered the first line of a table with nothing above it (Anomalies section). They are put back in the flow there (themeoblyon/modules/einvoicing.inc.php)
 ### [3.9.2] - Compatibility 18.0.x - 24.0.x (2026/11/20)
 ### Added
 - postUpdate() on the module descriptor, run by the dolinfras module of the Dolibarr LTS by InfraS after the module files are updated, entity by entity, without deactivating / reactivating the module: it replays the constant migrations of init() (kanban: OBLYON_DISABLE_KANBAN_VIEW_IN_LIST to DISABLE_KANBAN_VIEW_IN_LIST; 3.8.0 density: THEME_ELDY_USECOMOACTROW to OBLYON_DENSITY "comfortable") and restores MAIN_FONTAWESOME_DIRECTORY (entity 0) when it points to a missing directory. Idempotent: it never calls remove(), never copies the theme and leaves the other settings untouched. init() now runs the same migrations through postUpdate()

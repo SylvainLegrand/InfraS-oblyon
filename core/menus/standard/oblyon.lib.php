@@ -699,6 +699,36 @@ function oblyon_flyout_build_url($entry)
 }
 
 /**
+ * Menu entries of the database (llx_menu) for the flyouts, loaded once per page with leftmenu = 'all'.
+ * The entries given by the menu manager were evaluated with the leftmenu of the current page : an entry whose condition
+ * reads $leftmenu (ex. preg_match('/^(einvoicing|all)/', $leftmenu) of einvoicing 1.5.0.9) was then missing from the flyouts
+ * everywhere but in its own section, while the hard coded entries are always printed whole (forceleftmenu = 'all').
+ * Falls back on the entries of the menu manager if the load fails.
+ *	InfraS add
+ *
+ * @param	array	$context	Flyout context (tabMenu, type_user), see oblyon_flyout_context()
+ * @return	array				Menu entries
+ */
+function oblyon_flyout_tabmenu_all($context)
+{
+	global $db, $mainmenu, $leftmenu;
+	static $tabMenuAll = null;
+
+	if ($tabMenuAll === null) {
+		require_once DOL_DOCUMENT_ROOT.'/core/class/menubase.class.php';
+		$savemainmenu	= $mainmenu;
+		$saveleftmenu	= $leftmenu;
+		$loaded			= array();
+		$menuArbo		= new Menubase($db, 'oblyon');
+		$result			= $menuArbo->menuLoad((empty($_SESSION['mainmenu']) ? '' : $_SESSION['mainmenu']), 'all', $context['type_user'], 'oblyon', $loaded);
+		$mainmenu		= $savemainmenu;	// menuLoad() overwrites these globals (read by dol_eval())
+		$leftmenu		= $saveleftmenu;
+		$tabMenuAll		= ($result > 0 ? $loaded : $context['tabMenu']);
+	}
+	return $tabMenuAll;
+}
+
+/**
  * Print the flyout panel of a main menu entry : the whole sub-menu tree of the module (all levels), as nested lists.
  * The tree is built by print_left_oblyon_menu() in silent mode for the given mainmenu (single source of truth : hard coded entries, llx_menu entries, hooks, permissions).
  *
@@ -715,7 +745,7 @@ function print_oblyon_flyout($idsel)
 
 	require_once DOL_DOCUMENT_ROOT.'/core/class/menu.class.php';
 	$submenu	= new Menu();
-	$tabMenu	= $context['tabMenu'];
+	$tabMenu	= oblyon_flyout_tabmenu_all($context);	// InfraS change (3.9.3) : entrees llx_menu evaluees avec leftmenu = 'all', comme les entrees codees en dur
 	ob_start();	// safety net : nothing must be printed by the silent build (a hook could print something)
 	print_left_oblyon_menu($db, array(), array(), $tabMenu, $submenu, 1, $idsel, 'all', null, $context['type_user']);
 	ob_end_clean();

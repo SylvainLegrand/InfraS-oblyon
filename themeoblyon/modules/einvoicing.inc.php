@@ -21,4 +21,11 @@
 	position: static !important;
 	top: unset !important;
 }
+/* Module einvoicing (2026-11) : sections depliables du tableau de bord (einvoicingindex.php, details.einv-acc).
+   Leur corps (.einv-body, overflow-x: auto) est un conteneur de defilement : l'en-tete collant s'y decale de 40/54px
+   et recouvre la premiere ligne quand rien ne precede le tableau (section Anomalies). On les remet dans le flux. */
+.einv-acc tr.liste_titre th {
+	position: static !important;
+	top: unset !important;
+}
 <?php } ?>
