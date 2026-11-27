@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### [3.9.4] - Compatibility 18.0.x - 24.0.x (2026/11/27)
+### Fixed
+- Card tabs, "boxed" style: the "More... (n)" tab was unreadable on hover (dark text on the dark hover background). The core puts the tabunactive class on the link of this tab itself, and the link colour (a.tabunactive, !important) won over the hover text colour. The link now takes the hover text colour (themeoblyon/cards.inc.php). Reported on the alphaproteines instance
+- MAIN_MAXTABS_IN_CARD was seeded with an empty value by data.sql. The core reads an empty value as 0, not as its default of 99: every card of an entity where the option had never been saved showed only the active tab, all the others being moved into "More...". It is now seeded with 20 (sql/data.sql), and postUpdate() sets an existing empty value to 20, entity by entity, after the module files are updated (a value chosen in the Options tab is never changed; a reactivation alone does not change it either, data.sql skipping existing constants)
 ### [3.9.3] - Compatibility 18.0.x - 24.0.x (2026/11/26)
 ### Fixed
 - Sub-menus in flyouts (and in the mobile drawer): the menu entries added by modules (llx_menu) were evaluated with the leftmenu of the current page, so an entry whose condition reads $leftmenu (e.g. the sub-menus of einvoicing 1.5.0.9, preg_match('/^(einvoicing|all)/', $leftmenu)) was missing from the flyout everywhere but in its own section. The flyouts now read the module entries loaded once per page with leftmenu = 'all', like the hard coded entries (oblyon_flyout_tabmenu_all(), core/menus/standard/oblyon.lib.php)

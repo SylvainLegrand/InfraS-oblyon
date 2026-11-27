@@ -180,6 +180,7 @@
 		 * entité par entité) après une mise à jour des fichiers. Rejoue les migrations de constantes d'init() : kanban
 		 * (OBLYON_DISABLE_KANBAN_VIEW_IN_LIST -> DISABLE_KANBAN_VIEW_IN_LIST) et densité 3.8.0 (THEME_ELDY_USECOMOACTROW ->
 		 * OBLYON_DENSITY "comfortable"), puis rétablit MAIN_FONTAWESOME_DIRECTORY (entité 0) s'il désigne un répertoire absent.
+		 * InfraS add 3.9.4 : MAIN_MAXTABS_IN_CARD vide (semée vide par data.sql avant 3.9.4) passée à 20.
 		 * Sans remove(), sans copie du thème (livré par la LTS), sans toucher aux autres réglages. Idempotente.
 		 * @param		int		$dryrun		1 = aucune écriture, rapport seulement
 		 * @return		array				array('status' => 'done'|'skipped'|'error', 'details' => string)
@@ -230,6 +231,15 @@
 					}
 				}
 			}
+			// InfraS add begin : MAIN_MAXTABS_IN_CARD semée vide par data.sql avant 3.9.4 ; vide vaut 0 pour le cœur (getDolGlobalInt), qui n'affichait
+			// alors que l'onglet actif de chaque fiche -> 20, comme data.sql. Écrite seulement si vide : une valeur choisie n'est jamais touchée (3.9.4, 2026-11-27)
+			if (isset($conf->global->MAIN_MAXTABS_IN_CARD) && trim((string) $conf->global->MAIN_MAXTABS_IN_CARD) === '') {
+				$done[]	= 'MAIN_MAXTABS_IN_CARD (empty) -> 20';
+				if (empty($dryrun) && dolibarr_set_const($this->db, 'MAIN_MAXTABS_IN_CARD', '20', 'chaine', 0, 'Oblyon module', $conf->entity) < 0) {
+					$errors[]	= 'MAIN_MAXTABS_IN_CARD';
+				}
+			}
+			// InfraS add end
 			if (!empty($errors)) {
 				return array('status' => 'error', 'details' => 'not applied: '.implode(', ', $errors));
 			}

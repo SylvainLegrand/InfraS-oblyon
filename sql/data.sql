@@ -298,7 +298,8 @@ INSERT INTO llx_const (name, entity, value, type, visible, note) VALUES ('FIX_ST
 INSERT INTO llx_const (name, entity, value, type, visible, note) VALUES ('FIX_TITLE_IN_LIST',								'__ENTITY__', '0',					'chaine',	'0',	'Oblyon module');
 INSERT INTO llx_const (name, entity, value, type, visible, note) VALUES ('MAIN_DISABLE_BLOCK_MRP',							'__ENTITY__', '0',					'chaine',	'0',	'Oblyon module');
 INSERT INTO llx_const (name, entity, value, type, visible, note) VALUES ('MAIN_GRANDTOTAL_LIST_SHOW',						'__ENTITY__', '0',					'chaine',	'0',	'Oblyon module');
-INSERT INTO llx_const (name, entity, value, type, visible, note) VALUES ('MAIN_MAXTABS_IN_CARD',							'__ENTITY__', '',					'chaine',	'0',	'Oblyon module');
+-- InfraS change : 20 au lieu de vide (3.9.4) ; une valeur vide vaut 0 pour le coeur (getDolGlobalInt), qui n'affichait alors que l'onglet actif de chaque fiche
+INSERT INTO llx_const (name, entity, value, type, visible, note) VALUES ('MAIN_MAXTABS_IN_CARD',							'__ENTITY__', '20',					'chaine',	'0',	'Oblyon module');
 INSERT INTO llx_const (name, entity, value, type, visible, note) VALUES ('MAIN_MOTD',										'__ENTITY__', '',					'chaine',	'0',	'Oblyon module');
 INSERT INTO llx_const (name, entity, value, type, visible, note) VALUES ('MAIN_USE_TOP_MENU_SEARCH_DROPDOWN',				'__ENTITY__', '0',					'chaine',	'0',	'Oblyon module');
 INSERT INTO llx_const (name, entity, value, type, visible, note) VALUES ('MAIN_VIEW_LINE_NUMBER',							'__ENTITY__', '0',					'chaine',	'0',	'Oblyon module');

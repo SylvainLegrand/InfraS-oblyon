@@ -1011,6 +1011,14 @@ a.tab:link, a.tab:visited, a.tab:hover, a.tab#active {
 	border-radius: var(--oblyon-radius) var(--oblyon-radius) 0 0;
 	height: 38px;
 }
+/* InfraS add begin : onglet "Plus..." lisible au survol en style boites (3.9.4) : le coeur pose la classe tabunactive sur le lien lui-meme
+   (a.tab.moretab), dont la couleur de lien !important restait sur le fond --bgnavleft_hover de div.tabsElem:hover (texte sombre sur fond sombre) */
+<?php if ($oblyon_tabs_style == 'boxed') { ?>
+div.tabsElem:hover a.tab.moretab {
+	color: var(--bgnavleft_txt_hover) !important;
+}
+<?php } ?>
+/* InfraS add end */
 <?php if ($oblyon_tabs_style == 'underline') { ?>
 /* style des onglets "soulignes" (OBLYON_TABS_STYLE = underline, 3.8.0) : bande neutre a coins superieurs arrondis, fermee par un filet ;
    onglets inactifs en texte attenue, survol en texte des lignes sur fond des lignes, actif en couleur principale sur fond des lignes avec un soulignement de 3 px
